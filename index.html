@@ -1,6 +1,893 @@
-git init
-   git add index.html README.md
-   git commit -m Dashboard do plano de ação estratégico — ItapemaSC
-   git branch -M main
-   git remote add origin httpsgithub.comseu-usuarioseu-repositorio.git
-   git push -u origin main
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano de Ação Estratégico — Itapema/SC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EEF3F3;
+    --surface: #FFFFFF;
+    --surface-2: #F5F9F9;
+    --ink: #12232E;
+    --ink-soft: #4B6272;
+    --ink-faint: #8098A3;
+    --line: #D7E1E2;
+    --line-strong: #C1D0D1;
+    --accent: #1B6B72;
+    --accent-soft: #E3EFEF;
+    --critico: #C1432B;
+    --critico-soft: #F7E4DF;
+    --atencao: #C4881B;
+    --atencao-soft: #F8ECD6;
+    --andamento: #2E6DA4;
+    --andamento-soft: #DEE9F3;
+    --concluido: #2E8F5C;
+    --concluido-soft: #DDEFE4;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(18,35,46,0.06), 0 4px 16px rgba(18,35,46,0.05);
+    font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; background: var(--bg); color: var(--ink); }
+  body{ padding: 28px 32px 60px; line-height:1.45; }
+  .mono{ font-family: 'IBM Plex Mono', 'Courier New', monospace; }
+  h1,h2,h3{ font-family: 'IBM Plex Sans', sans-serif; margin:0; }
+  .app{ max-width: 1180px; margin: 0 auto; opacity:0; animation: fadeIn .5s ease forwards; }
+  @keyframes fadeIn{ to{ opacity:1; } }
+  @media (prefers-reduced-motion: reduce){
+    .app{ animation:none; opacity:1; }
+    *{ transition:none !important; animation-duration:0.001ms !important; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px 28px 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  .hero-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap; }
+  .eyebrow{
+    text-transform: uppercase; letter-spacing: .12em; font-size: 11.5px; font-weight:600;
+    color: var(--accent); margin-bottom:6px; display:block;
+  }
+  .hero h1{ font-size: 26px; font-weight:700; color: var(--ink); }
+  .hero .subtitle{ color: var(--ink-soft); font-size: 14px; margin-top:6px; max-width:560px; }
+  .sync-status{ font-size:11.5px; color: var(--ink-faint); text-align:right; white-space:nowrap; }
+  .sync-status .dot{ display:inline-block; width:6px; height:6px; border-radius:50%; background: var(--concluido); margin-right:5px; }
+
+  .vitals-strip{
+    display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:20px;
+  }
+  .vital{
+    border-radius: 8px; padding: 12px 14px; position:relative; overflow:hidden;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .vital::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+  }
+  .vital[data-status="Crítico"]::before{ background: var(--critico); }
+  .vital[data-status="Atenção"]::before{ background: var(--atencao); }
+  .vital[data-status="Em andamento"]::before{ background: var(--andamento); }
+  .vital[data-status="Concluído"]::before{ background: var(--concluido); }
+  .vital .vlabel{ font-size:11px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; font-weight:600; }
+  .vital .vvalue{ font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:600; margin-top:4px; }
+  .vital .vstatus{ font-size:11.5px; margin-top:2px; font-weight:600; }
+  .vital[data-status="Crítico"] .vstatus{ color: var(--critico); }
+  .vital[data-status="Atenção"] .vstatus{ color: var(--atencao); }
+  .vital[data-status="Em andamento"] .vstatus{ color: var(--andamento); }
+  .vital[data-status="Concluído"] .vstatus{ color: var(--concluido); }
+
+  /* ---------- KPI ROW ---------- */
+  .kpi-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom:18px; }
+  .kpi-card{
+    background: var(--surface); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 18px; box-shadow: var(--shadow);
+  }
+  .kpi-card .klabel{ font-size:11.5px; color: var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  .kpi-card .kvalue{ font-family:'IBM Plex Mono', monospace; font-size:28px; font-weight:600; margin-top:6px; color: var(--ink); }
+  .kpi-card .knote{ font-size:12px; color: var(--ink-faint); margin-top:3px; }
+
+  /* ---------- OVERVIEW GRID ---------- */
+  .overview-grid{ display:grid; grid-template-columns: 1.5fr 1fr; gap:14px; margin-bottom:18px; }
+  .panel{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding:18px 20px; box-shadow: var(--shadow); }
+  .panel h3{ font-size:14px; font-weight:600; margin-bottom:14px; }
+  .panel h3 .sub{ display:block; font-weight:400; font-size:11.5px; color: var(--ink-faint); margin-top:2px; }
+
+  .eixo-chart-row{ margin-bottom:14px; }
+  .eixo-chart-row:last-child{ margin-bottom:0; }
+  .eixo-chart-head{ display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:5px; }
+  .eixo-chart-head .name{ font-weight:600; }
+  .eixo-chart-head .pct{ font-family:'IBM Plex Mono', monospace; color: var(--ink-soft); }
+
+  .goal-track{
+    position:relative; height:16px; background: var(--surface-2); border:1px solid var(--line); border-radius:5px; overflow:visible;
+  }
+  .goal-fill{
+    position:absolute; left:0; top:0; bottom:0; border-radius:4px 0 0 4px; transition: width .4s ease, background-color .3s ease;
+  }
+  .goal-fill.full-round{ border-radius:4px; }
+  .goal-marker{
+    position:absolute; top:-3px; bottom:-3px; width:2px; background: var(--ink);
+  }
+  .goal-marker::after{
+    content: attr(data-label); position:absolute; top:-16px; left:50%; transform:translateX(-50%);
+    font-size:9.5px; font-family:'IBM Plex Mono', monospace; color: var(--ink-soft); white-space:nowrap;
+  }
+
+  .donut-wrap{ display:flex; flex-direction:column; align-items:center; }
+  .donut-svg{ width:150px; height:150px; }
+  .donut-center-label{ font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:600; }
+  .donut-center-sub{ font-size:10.5px; color: var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; }
+  .donut-legend{ display:grid; grid-template-columns: 1fr 1fr; gap:6px 14px; margin-top:16px; width:100%; }
+  .legend-item{ display:flex; align-items:center; gap:7px; font-size:12px; }
+  .legend-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .legend-count{ margin-left:auto; font-family:'IBM Plex Mono', monospace; font-weight:600; }
+
+  /* ---------- CONTROLS ---------- */
+  .controls-bar{
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px;
+    background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding:12px 16px; box-shadow: var(--shadow);
+  }
+  .controls-bar input[type="search"], .controls-bar select{
+    font-family:'IBM Plex Sans', sans-serif; font-size:13px; padding:8px 10px; border-radius:7px;
+    border:1px solid var(--line-strong); background: var(--surface-2); color: var(--ink);
+  }
+  .controls-bar input[type="search"]{ flex: 1 1 200px; min-width:160px; }
+  .controls-bar select{ flex: 0 0 auto; }
+  .btn{
+    font-family:'IBM Plex Sans', sans-serif; font-size:13px; font-weight:600; padding:8px 14px; border-radius:7px;
+    border:1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); cursor:pointer;
+  }
+  .btn:hover{ background: var(--accent-soft); border-color: var(--accent); }
+  .btn.primary{ background: var(--accent); color:#fff; border-color: var(--accent); }
+  .btn.primary:hover{ background:#155258; }
+  .btn.danger-outline{ color: var(--critico); border-color: var(--critico); background:#fff; }
+  .btn.danger-outline:hover{ background: var(--critico-soft); }
+  .spacer{ flex: 1 1 auto; }
+  :focus-visible{ outline: 2.5px solid var(--accent); outline-offset:2px; }
+
+  /* ---------- EIXO PANELS ---------- */
+  .eixo-panel{
+    background: var(--surface); border:1px solid var(--line); border-radius: var(--radius);
+    margin-bottom: 14px; box-shadow: var(--shadow); overflow:hidden;
+  }
+  .eixo-header{ padding: 16px 20px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  .eixo-tag{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:12.5px; padding:4px 9px; border-radius:5px;
+    background: var(--accent-soft); color: var(--accent); flex-shrink:0;
+  }
+  .eixo-title-block{ min-width:180px; }
+  .eixo-title-block .etitle{ font-weight:600; font-size:14.5px; }
+  .eixo-title-block .esub{ font-size:12px; color: var(--ink-faint); margin-top:1px; }
+  .eixo-header .goal-track{ flex: 1 1 200px; min-width:160px; }
+  .status-pill{
+    font-size:11.5px; font-weight:600; padding:4px 10px; border-radius: 20px; white-space:nowrap; flex-shrink:0;
+  }
+  .status-pill.Crítico{ background: var(--critico-soft); color: var(--critico); }
+  .status-pill.Atenção{ background: var(--atencao-soft); color: var(--atencao); }
+  .status-pill.Em.andamento, .status-pill[data-s="Em andamento"]{ background: var(--andamento-soft); color: var(--andamento); }
+  .status-pill.Concluído{ background: var(--concluido-soft); color: var(--concluido); }
+  .eixo-count{ font-size:12px; color: var(--ink-faint); flex-shrink:0; }
+
+  .actions-list{ border-top:1px solid var(--line); }
+  .action-row{ border-bottom:1px solid var(--line); }
+  .action-row:last-child{ border-bottom:none; }
+  .action-summary{
+    display:flex; align-items:center; gap:14px; padding: 13px 20px; cursor:pointer; flex-wrap:wrap;
+  }
+  .action-summary:hover{ background: var(--surface-2); }
+  .chevron{ width:9px; height:9px; border-right:2px solid var(--ink-faint); border-bottom:2px solid var(--ink-faint);
+    transform: rotate(-45deg); transition: transform .2s ease; flex-shrink:0; }
+  .action-row.open .chevron{ transform: rotate(45deg); }
+  .action-code{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600; color: var(--ink-soft); flex-shrink:0; width:38px; }
+  .action-summary-text{ flex: 1 1 220px; min-width:160px; font-size:13px; }
+  .action-summary-text .a-title{ font-weight:500; }
+  .action-summary-text .a-indicator{ font-size:12px; color: var(--ink-faint); margin-top:1px; }
+  .action-summary .goal-track{ width:130px; flex-shrink:0; }
+  .action-summary .resp-tag{ font-size:11.5px; color: var(--ink-soft); background: var(--surface-2); border:1px solid var(--line); padding:3px 8px; border-radius:5px; flex-shrink:0; white-space:nowrap; }
+
+  .action-detail{ display:none; padding: 4px 20px 20px 20px; }
+  .action-row.open .action-detail{ display:block; }
+  .field-group{ margin-bottom:12px; }
+  .field-group label{ display:block; font-size:11.5px; font-weight:600; color: var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .field-group textarea, .field-group input, .field-group select{
+    width:100%; font-family:'IBM Plex Sans', sans-serif; font-size:13.5px; padding:8px 10px; border-radius:7px;
+    border:1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); resize:vertical;
+  }
+  .field-group input[type="number"]{ font-family:'IBM Plex Mono', monospace; }
+  .field-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
+  .field-grid.cols-2{ grid-template-columns: repeat(2, 1fr); }
+  .readonly-box{
+    font-family:'IBM Plex Mono', monospace; font-size:16px; font-weight:600; padding:8px 10px;
+    background: var(--surface-2); border:1px dashed var(--line-strong); border-radius:7px; text-align:center;
+  }
+  .ating-inline{ display:flex; align-items:center; gap:10px; }
+  .ating-inline .goal-track{ flex:1; }
+  .ating-inline .readonly-box{ width:70px; flex-shrink:0; }
+
+  .empty-note{ padding: 26px 20px; text-align:center; color: var(--ink-faint); font-size:13px; }
+
+  /* ---------- FOOTER ---------- */
+  .methodology-footer{
+    background: var(--surface); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 22px; box-shadow: var(--shadow); font-size:12.5px; color: var(--ink-soft);
+  }
+  .methodology-footer h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; color: var(--ink); margin-bottom:6px; }
+  .methodology-footer p{ margin: 0 0 8px; }
+  .methodology-footer p:last-child{ margin-bottom:0; }
+
+  .modal-overlay{
+    position:fixed; inset:0; background: rgba(18,35,46,0.45); display:none; align-items:center; justify-content:center; z-index:50;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
+    background:#fff; border-radius: var(--radius); padding: 22px 24px; max-width:400px; width:90%; box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  }
+  .modal-box h4{ margin:0 0 8px; font-size:15px; }
+  .modal-box p{ font-size:13px; color: var(--ink-soft); margin:0 0 18px; }
+  .modal-actions{ display:flex; gap:10px; justify-content:flex-end; }
+
+  @media (max-width: 880px){
+    body{ padding: 18px 14px 40px; }
+    .vitals-strip, .kpi-row{ grid-template-columns: repeat(2, 1fr); }
+    .overview-grid{ grid-template-columns: 1fr; }
+    .field-grid{ grid-template-columns: 1fr 1fr; }
+    .hero-top{ flex-direction:column; }
+  }
+  @media (max-width: 520px){
+    .vitals-strip, .kpi-row{ grid-template-columns: 1fr 1fr; }
+    .field-grid, .field-grid.cols-2{ grid-template-columns: 1fr; }
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .controls-bar, .btn, .sync-status{ display:none !important; }
+    .action-detail{ display:block !important; }
+    .chevron{ display:none; }
+    .panel, .eixo-panel, .hero, .kpi-card, .methodology-footer{ box-shadow:none; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="hero">
+    <div class="hero-top">
+      <div>
+        <span class="eyebrow">Assessoria de Gestão em Saúde · Itapema/SC</span>
+        <h1>Plano de Ação Estratégico</h1>
+        <p class="subtitle">Monitoramento contínuo de eixos, indicadores e metas de execução — ciclo de avaliação PDCA/PDSA aplicado ao Planejamento Estratégico Situacional (PES).</p>
+      </div>
+      <div class="sync-status" id="syncStatus"><span class="dot"></span>Carregando dados salvos…</div>
+    </div>
+    <div class="vitals-strip" id="vitalsStrip"></div>
+  </div>
+
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <div class="overview-grid">
+    <div class="panel">
+      <h3>% de atingimento por eixo <span class="sub">preenchido = percentual atual · traço = meta de 12 meses</span></h3>
+      <div id="eixoChart"></div>
+    </div>
+    <div class="panel">
+      <h3>Distribuição de status <span class="sub">nível ação (12 no total)</span></h3>
+      <div class="donut-wrap" id="donutWrap"></div>
+    </div>
+  </div>
+
+  <div class="controls-bar">
+    <input type="search" id="searchInput" placeholder="Buscar por ação, indicador ou código…" aria-label="Buscar ações">
+    <select id="filterEixo" aria-label="Filtrar por eixo">
+      <option value="all">Todos os eixos</option>
+      <option value="EIXO 1">Eixo 1</option>
+      <option value="EIXO 2">Eixo 2</option>
+      <option value="EIXO 3">Eixo 3</option>
+      <option value="EIXO 4">Eixo 4</option>
+    </select>
+    <select id="filterStatus" aria-label="Filtrar por status">
+      <option value="all">Todos os status</option>
+      <option value="Crítico">Crítico</option>
+      <option value="Atenção">Atenção</option>
+      <option value="Em andamento">Em andamento</option>
+      <option value="Concluído">Concluído</option>
+    </select>
+    <select id="filterResp" aria-label="Filtrar por responsável">
+      <option value="all">Todos os responsáveis</option>
+      <option value="Coordenação Técnica">Coordenação Técnica</option>
+      <option value="Equipe de Gestão">Equipe de Gestão</option>
+      <option value="Vigilância em Saúde">Vigilância em Saúde</option>
+      <option value="APS/Atenção Básica">APS/Atenção Básica</option>
+      <option value="Assessoria Externa">Assessoria Externa</option>
+    </select>
+    <select id="sortSelect" aria-label="Ordenar ações dentro de cada eixo">
+      <option value="gapDesc">Ordenar: maior GAP primeiro</option>
+      <option value="atingAsc">Ordenar: menor atingimento primeiro</option>
+      <option value="codigo">Ordenar: código</option>
+    </select>
+    <div class="spacer"></div>
+    <button class="btn" id="btnExport" type="button">Exportar CSV</button>
+    <button class="btn" id="btnPrint" type="button">Imprimir relatório</button>
+    <button class="btn danger-outline" id="btnReset" type="button">Restaurar padrão</button>
+  </div>
+
+  <div id="eixosList"></div>
+
+  <div class="methodology-footer">
+    <h4>Fundamentação metodológica</h4>
+    <p>O desenho de monitoramento por eixos, indicadores e metas segue os princípios do Planejamento Estratégico Situacional (Matus) e as diretrizes de monitoramento e avaliação do Ministério da Saúde / PlanejaSUS, adaptados para uso em projetos de assessoria técnica em gestão municipal de saúde. GAP (p.p.) = Meta − Percentual atual. % de atingimento = MIN(Percentual atual / Meta, 100%). Status: Concluído (≥100%) · Em andamento (≥70%) · Atenção (≥30%) · Crítico (&lt;30%).</p>
+    <p>Recomenda-se atualização mensal ou bimestral dos percentuais e registro das fontes de verificação no campo de Observações (ex.: SIH/SUS, SIM, SISAB, e-SUS, relatórios de gestão local), assegurando rastreabilidade das informações. Todos os dados ficam salvos automaticamente neste dispositivo.</p>
+    <p id="lastUpdatedNote">Última atualização: —</p>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="resetModal">
+  <div class="modal-box">
+    <h4>Restaurar dados padrão?</h4>
+    <p>Esta ação substitui todos os percentuais, responsáveis, prazos e observações preenchidos pelos valores originais da planilha (linha de base). Não pode ser desfeita.</p>
+    <div class="modal-actions">
+      <button class="btn" id="cancelReset" type="button">Cancelar</button>
+      <button class="btn danger-outline" id="confirmReset" type="button">Restaurar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "planoAcaoItapemaV1";
+
+  var RESPONSAVEIS = ["Coordenação Técnica","Equipe de Gestão","Vigilância em Saúde","APS/Atenção Básica","Assessoria Externa"];
+
+  function defaultActions(){
+    return [
+      { id:"1.1", eixo:"EIXO 1", descricaoObjetivo:"Elaborar um protocolo municipal de esterilização e fluxo de materiais/instrumentais", acao:"", indicador:"Elaboração de 1 (um) protocolo municipal", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.2", eixo:"EIXO 1", descricaoObjetivo:"Instituir fluxo e centralizar a logística de esterilização de materiais (CME municipal)", acao:"", indicador:"Instituir 1 (um) fluxo de esterilização para o CME municipal", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.3", eixo:"EIXO 1", descricaoObjetivo:"Desenvolver memorando de materiais por meio de levantamento quantitativo de instrumentais no município de Itapema/SC", acao:"", indicador:"Desenvolver 1 (um) memorando de instrumentais", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.4", eixo:"EIXO 2", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.5", eixo:"EIXO 2", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.6", eixo:"EIXO 2", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.7", eixo:"EIXO 3", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.8", eixo:"EIXO 3", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.9", eixo:"EIXO 3", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.10", eixo:"EIXO 4", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.11", eixo:"EIXO 4", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" },
+      { id:"1.12", eixo:"EIXO 4", descricaoObjetivo:"", acao:"", indicador:"", atual:0, meta:100, dataInicio:"", dataTermino:"", responsavel:"", prazo:"", observacoes:"" }
+    ];
+  }
+
+  var EIXO_SUBTITLES = {
+    "EIXO 1": "Protocolos, fluxo do CME e gestão de instrumentais",
+    "EIXO 2": "Detalhamento pendente de preenchimento pela equipe técnica",
+    "EIXO 3": "Detalhamento pendente de preenchimento pela equipe técnica",
+    "EIXO 4": "Detalhamento pendente de preenchimento pela equipe técnica"
+  };
+
+  var actions = [];
+  var filters = { search:"", eixo:"all", status:"all", responsavel:"all", sort:"gapDesc" };
+  var saveTimer = null;
+
+  function slug(eixoStr){ return eixoStr.toLowerCase().replace(/\s+/g,"-"); }
+  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+  function round1(n){ return Math.round(n*10)/10; }
+
+  function computeDerived(a){
+    var atual = Number(a.atual) || 0;
+    var meta = Number(a.meta) || 0;
+    var gap = round1(meta - atual);
+    var atingimento = meta > 0 ? clamp(atual/meta,0,1)*100 : 0;
+    var status;
+    if (atingimento >= 100) status = "Concluído";
+    else if (atingimento >= 70) status = "Em andamento";
+    else if (atingimento >= 30) status = "Atenção";
+    else status = "Crítico";
+    return { gap: gap, atingimento: atingimento, status: status };
+  }
+
+  function statusColor(status){
+    return { "Crítico":"var(--critico)", "Atenção":"var(--atencao)", "Em andamento":"var(--andamento)", "Concluído":"var(--concluido)" }[status];
+  }
+  function statusColorHex(status){
+    return { "Crítico":"#C1432B", "Atenção":"#C4881B", "Em andamento":"#2E6DA4", "Concluído":"#2E8F5C" }[status];
+  }
+
+  function eixoGroups(){
+    var keys = ["EIXO 1","EIXO 2","EIXO 3","EIXO 4"];
+    return keys.map(function(k){
+      var items = actions.filter(function(a){ return a.eixo === k; });
+      var derived = items.map(computeDerived);
+      var avgAtual = items.length ? items.reduce(function(s,a){ return s + (Number(a.atual)||0); },0)/items.length : 0;
+      var avgMeta = items.length ? items.reduce(function(s,a){ return s + (Number(a.meta)||0); },0)/items.length : 0;
+      var avgAting = derived.length ? derived.reduce(function(s,d){ return s + d.atingimento; },0)/derived.length : 0;
+      var status;
+      if (avgAting >= 100) status = "Concluído";
+      else if (avgAting >= 70) status = "Em andamento";
+      else if (avgAting >= 30) status = "Atenção";
+      else status = "Crítico";
+      return { key:k, items:items, avgAtual:avgAtual, avgMeta:avgMeta, avgAting:avgAting, status:status };
+    });
+  }
+
+  /* ---------------- STORAGE ---------------- */
+  function scheduleSave(){
+    var el = document.getElementById("syncStatus");
+    if (el) el.innerHTML = '<span class="dot" style="background:var(--atencao)"></span>Salvando…';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 600);
+  }
+
+  function doSave(){
+    var payload = { actions: actions, updatedAt: new Date().toISOString() };
+    window.storage.set(STORAGE_KEY, JSON.stringify(payload), false).then(function(res){
+      var el = document.getElementById("syncStatus");
+      var now = new Date();
+      var hh = String(now.getHours()).padStart(2,"0");
+      var mm = String(now.getMinutes()).padStart(2,"0");
+      if (el) el.innerHTML = '<span class="dot"></span>Salvo automaticamente às ' + hh + ":" + mm;
+      var note = document.getElementById("lastUpdatedNote");
+      if (note) note.textContent = "Última atualização: " + now.toLocaleDateString("pt-BR") + " às " + hh + ":" + mm;
+    }).catch(function(){
+      var el = document.getElementById("syncStatus");
+      if (el) el.innerHTML = '<span class="dot" style="background:var(--critico)"></span>Não foi possível salvar agora';
+    });
+  }
+
+  function loadState(){
+    return window.storage.get(STORAGE_KEY, false).then(function(res){
+      if (res && res.value){
+        try {
+          var parsed = JSON.parse(res.value);
+          if (parsed && Array.isArray(parsed.actions)) return parsed;
+        } catch(e){}
+      }
+      return null;
+    }).catch(function(){ return null; });
+  }
+
+  /* ---------------- RENDER: static structure (once) ---------------- */
+  function buildAll(){
+    renderVitals();
+    buildKpiRow();
+    buildChartPanel();
+    buildDonutPanel();
+    buildEixoPanels();
+    refreshDerivedAll();
+    attachControlHandlers();
+  }
+
+  function renderVitals(){
+    var strip = document.getElementById("vitalsStrip");
+    strip.innerHTML = "";
+    ["EIXO 1","EIXO 2","EIXO 3","EIXO 4"].forEach(function(k){
+      var div = document.createElement("div");
+      div.className = "vital";
+      div.id = "vital-" + slug(k);
+      div.setAttribute("data-status","Crítico");
+      div.innerHTML = '<div class="vlabel">' + k + '</div><div class="vvalue" id="vital-value-' + slug(k) + '">0%</div><div class="vstatus" id="vital-status-' + slug(k) + '">Crítico</div>';
+      strip.appendChild(div);
+    });
+  }
+
+  function buildKpiRow(){
+    var row = document.getElementById("kpiRow");
+    row.innerHTML =
+      '<div class="kpi-card"><div class="klabel">Ações monitoradas</div><div class="kvalue" id="kpi-total">12</div><div class="knote">distribuídas em 4 eixos</div></div>' +
+      '<div class="kpi-card"><div class="klabel">Atingimento geral</div><div class="kvalue" id="kpi-ating">0%</div><div class="knote">média das 12 ações</div></div>' +
+      '<div class="kpi-card"><div class="klabel">Eixos em situação crítica</div><div class="kvalue" id="kpi-criticos">0 / 4</div><div class="knote">atingimento médio &lt; 30%</div></div>' +
+      '<div class="kpi-card"><div class="klabel">Prazo mais próximo</div><div class="kvalue mono" id="kpi-prazo" style="font-size:18px;">—</div><div class="knote" id="kpi-prazo-note">nenhum prazo definido</div></div>';
+  }
+
+  function buildChartPanel(){
+    var wrap = document.getElementById("eixoChart");
+    wrap.innerHTML = "";
+    ["EIXO 1","EIXO 2","EIXO 3","EIXO 4"].forEach(function(k){
+      var row = document.createElement("div");
+      row.className = "eixo-chart-row";
+      row.innerHTML =
+        '<div class="eixo-chart-head"><span class="name">' + k + '</span><span class="pct mono" id="chart-pct-' + slug(k) + '">0%</span></div>' +
+        '<div class="goal-track"><div class="goal-fill" id="chart-fill-' + slug(k) + '" style="width:0%;background:var(--critico);"></div><div class="goal-marker" id="chart-marker-' + slug(k) + '" data-label="meta" style="left:100%;"></div></div>';
+      wrap.appendChild(row);
+    });
+  }
+
+  function buildDonutPanel(){
+    var wrap = document.getElementById("donutWrap");
+    wrap.innerHTML =
+      '<svg class="donut-svg" viewBox="0 0 160 160" id="donutSvg" role="img" aria-label="Distribuição de status das ações">' +
+        '<g transform="rotate(-90 80 80)">' +
+          '<circle cx="80" cy="80" r="62" fill="none" stroke="#E7EEEE" stroke-width="18"></circle>' +
+          '<circle cx="80" cy="80" r="62" fill="none" stroke="#C1432B" stroke-width="18" id="seg-Crítico" stroke-dasharray="0 389.6" stroke-linecap="butt"></circle>' +
+          '<circle cx="80" cy="80" r="62" fill="none" stroke="#C4881B" stroke-width="18" id="seg-Atenção" stroke-dasharray="0 389.6" stroke-linecap="butt"></circle>' +
+          '<circle cx="80" cy="80" r="62" fill="none" stroke="#2E6DA4" stroke-width="18" id="seg-Em-andamento" stroke-dasharray="0 389.6" stroke-linecap="butt"></circle>' +
+          '<circle cx="80" cy="80" r="62" fill="none" stroke="#2E8F5C" stroke-width="18" id="seg-Concluído" stroke-dasharray="0 389.6" stroke-linecap="butt"></circle>' +
+        '</g>' +
+        '<text x="80" y="76" text-anchor="middle" class="donut-center-label" id="donutCenterLabel" style="font-size:26px; font-weight:600; fill:var(--ink);">12</text>' +
+        '<text x="80" y="94" text-anchor="middle" style="font-size:9.5px; fill:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em;">ações</text>' +
+      '</svg>' +
+      '<div class="donut-legend">' +
+        '<div class="legend-item"><span class="legend-dot" style="background:#C1432B;"></span>Crítico<span class="legend-count" id="legend-Crítico">12</span></div>' +
+        '<div class="legend-item"><span class="legend-dot" style="background:#C4881B;"></span>Atenção<span class="legend-count" id="legend-Atenção">0</span></div>' +
+        '<div class="legend-item"><span class="legend-dot" style="background:#2E6DA4;"></span>Andamento<span class="legend-count" id="legend-Em-andamento">0</span></div>' +
+        '<div class="legend-item"><span class="legend-dot" style="background:#2E8F5C;"></span>Concluído<span class="legend-count" id="legend-Concluído">0</span></div>' +
+      '</div>';
+  }
+
+  function fieldRow(labelHtml, innerHtml){
+    return '<div class="field-group"><label>' + labelHtml + '</label>' + innerHtml + '</div>';
+  }
+
+  function buildEixoPanels(){
+    var list = document.getElementById("eixosList");
+    list.innerHTML = "";
+    ["EIXO 1","EIXO 2","EIXO 3","EIXO 4"].forEach(function(k){
+      var sk = slug(k);
+      var panel = document.createElement("div");
+      panel.className = "eixo-panel";
+      panel.id = "panel-" + sk;
+      panel.innerHTML =
+        '<div class="eixo-header">' +
+          '<span class="eixo-tag">' + k.replace("EIXO ","E") + '</span>' +
+          '<div class="eixo-title-block"><div class="etitle">' + k + '</div><div class="esub">' + EIXO_SUBTITLES[k] + '</div></div>' +
+          '<div class="goal-track"><div class="goal-fill" id="eixo-fill-' + sk + '" style="width:0%;background:var(--critico);"></div><div class="goal-marker" style="left:100%;" data-label="meta"></div></div>' +
+          '<span class="mono" id="eixo-pct-' + sk + '" style="font-size:12.5px; color:var(--ink-soft); min-width:38px;">0%</span>' +
+          '<span class="status-pill" id="eixo-pill-' + sk + '" data-s="Crítico">Crítico</span>' +
+          '<span class="eixo-count" id="eixo-count-' + sk + '">3 ações</span>' +
+        '</div>' +
+        '<div class="actions-list" id="actions-' + sk + '"></div>';
+      list.appendChild(panel);
+
+      var actionsWrap = panel.querySelector("#actions-" + sk);
+      actions.filter(function(a){ return a.eixo === k; }).forEach(function(a){
+        actionsWrap.appendChild(buildActionRow(a));
+      });
+    });
+  }
+
+  function buildActionRow(a){
+    var row = document.createElement("div");
+    row.className = "action-row";
+    row.id = "row-" + a.id;
+    row.dataset.eixo = a.eixo;
+
+    var summary = document.createElement("div");
+    summary.className = "action-summary";
+    summary.innerHTML =
+      '<span class="chevron"></span>' +
+      '<span class="action-code">' + a.id + '</span>' +
+      '<span class="action-summary-text"><span class="a-title" id="summary-title-' + a.id + '">' + (a.descricaoObjetivo || "Sem descrição — clique para preencher") + '</span><span class="a-indicator" id="summary-indicator-' + a.id + '">' + (a.indicador || "Indicador não definido") + '</span></span>' +
+      '<div class="goal-track"><div class="goal-fill" id="ating-bar-' + a.id + '" style="width:0%;background:var(--critico);"></div><div class="goal-marker" style="left:100%;"></div></div>' +
+      '<span class="resp-tag" id="summary-resp-' + a.id + '">Sem responsável</span>' +
+      '<span class="status-pill" id="status-pill-' + a.id + '" data-s="Crítico">Crítico</span>';
+    summary.addEventListener("click", function(){
+      row.classList.toggle("open");
+    });
+    row.appendChild(summary);
+
+    var detail = document.createElement("div");
+    detail.className = "action-detail";
+
+    detail.innerHTML =
+      fieldRow("Descrição do objetivo estratégico", '<textarea rows="2" id="input-descricao-' + a.id + '" placeholder="Detalhamento do objetivo estratégico deste eixo/ação...">' + escapeHtml(a.descricaoObjetivo) + '</textarea>') +
+      fieldRow("Ação (atividade específica)", '<textarea rows="2" id="input-acao-' + a.id + '" placeholder="Descreva a atividade concreta a ser executada...">' + escapeHtml(a.acao) + '</textarea>') +
+      fieldRow("Indicador", '<input type="text" id="input-indicador-' + a.id + '" value="' + escapeAttr(a.indicador) + '" placeholder="Variável mensurável de acompanhamento (ex.: cobertura, tempo, adesão)...">') +
+      '<div class="field-grid">' +
+        fieldRow("Percentual atual (%)", '<input type="number" min="0" max="100" step="1" id="input-atual-' + a.id + '" value="' + a.atual + '">') +
+        fieldRow("Meta 12 meses (%)", '<input type="number" min="0" max="100" step="1" id="input-meta-' + a.id + '" value="' + a.meta + '">') +
+        fieldRow("GAP (p.p.)", '<div class="readonly-box" id="gap-' + a.id + '">0</div>') +
+      '</div>' +
+      '<div class="field-grid">' +
+        fieldRow("Data de início", '<input type="date" id="input-inicio-' + a.id + '" value="' + a.dataInicio + '">') +
+        fieldRow("Data de término", '<input type="date" id="input-termino-' + a.id + '" value="' + a.dataTermino + '">') +
+        fieldRow("Prazo", '<input type="date" id="input-prazo-' + a.id + '" value="' + a.prazo + '">') +
+      '</div>' +
+      '<div class="field-grid cols-2">' +
+        fieldRow("Responsável", buildRespSelect(a)) +
+        fieldRow("% de atingimento da meta", '<div class="ating-inline"><div class="goal-track"><div class="goal-fill" id="ating-detail-bar-' + a.id + '" style="width:0%;background:var(--critico);"></div></div><div class="readonly-box" id="ating-detail-value-' + a.id + '">0%</div></div>') +
+      '</div>' +
+      fieldRow("Observações / Evidências", '<textarea rows="2" id="input-obs-' + a.id + '" placeholder="Fonte de verificação sugerida: SIH/SUS, SIM, SISAB, e-SUS, relatório de gestão local...">' + escapeHtml(a.observacoes) + '</textarea>');
+
+    row.appendChild(detail);
+
+    // attach listeners after insertion
+    setTimeout(function(){ attachRowListeners(a.id); }, 0);
+    return row;
+  }
+
+  function buildRespSelect(a){
+    var html = '<select id="input-resp-' + a.id + '"><option value="">Selecionar…</option>';
+    RESPONSAVEIS.forEach(function(r){
+      html += '<option value="' + r + '"' + (a.responsavel === r ? " selected" : "") + '>' + r + '</option>';
+    });
+    html += "</select>";
+    return html;
+  }
+
+  function escapeHtml(s){
+    return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function escapeAttr(s){
+    return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function getAction(id){
+    for (var i=0;i<actions.length;i++){ if (actions[i].id === id) return actions[i]; }
+    return null;
+  }
+
+  function attachRowListeners(id){
+    function bind(fieldId, prop, isNumber){
+      var el = document.getElementById(fieldId);
+      if (!el) return;
+      el.addEventListener("input", function(){
+        var a = getAction(id);
+        if (!a) return;
+        a[prop] = isNumber ? clamp(Number(el.value)||0,0,100) : el.value;
+        refreshDerivedAll();
+        scheduleSave();
+      });
+      el.addEventListener("change", function(){
+        var a = getAction(id);
+        if (!a) return;
+        a[prop] = isNumber ? clamp(Number(el.value)||0,0,100) : el.value;
+        refreshDerivedAll();
+        scheduleSave();
+      });
+    }
+    bind("input-descricao-" + id, "descricaoObjetivo", false);
+    bind("input-acao-" + id, "acao", false);
+    bind("input-indicador-" + id, "indicador", false);
+    bind("input-atual-" + id, "atual", true);
+    bind("input-meta-" + id, "meta", true);
+    bind("input-inicio-" + id, "dataInicio", false);
+    bind("input-termino-" + id, "dataTermino", false);
+    bind("input-prazo-" + id, "prazo", false);
+    bind("input-resp-" + id, "responsavel", false);
+    bind("input-obs-" + id, "observacoes", false);
+  }
+
+  /* ---------------- REFRESH derived (read-only) DOM ---------------- */
+  function refreshDerivedAll(){
+    // per-action
+    actions.forEach(function(a){
+      var d = computeDerived(a);
+      setText("gap-" + a.id, (d.gap>0? "+":"") + d.gap);
+      setBar("ating-bar-" + a.id, d.atingimento, d.status);
+      setBar("ating-detail-bar-" + a.id, d.atingimento, d.status);
+      setText("ating-detail-value-" + a.id, Math.round(d.atingimento) + "%");
+      setPill("status-pill-" + a.id, d.status);
+      setText("summary-title-" + a.id, a.descricaoObjetivo || "Sem descrição — clique para preencher");
+      setText("summary-indicator-" + a.id, a.indicador || "Indicador não definido");
+      setText("summary-resp-" + a.id, a.responsavel || "Sem responsável");
+    });
+
+    // eixo aggregates
+    var groups = eixoGroups();
+    groups.forEach(function(g){
+      var sk = slug(g.key);
+      setBar("eixo-fill-" + sk, g.avgAting, g.status);
+      setText("eixo-pct-" + sk, Math.round(g.avgAting) + "%");
+      setPill("eixo-pill-" + sk, g.status);
+      setText("eixo-count-" + sk, g.items.length + " ações");
+      setBar("chart-fill-" + sk, g.avgAting, g.status);
+      setText("chart-pct-" + sk, Math.round(g.avgAting) + "%");
+
+      var vv = document.getElementById("vital-value-" + sk);
+      if (vv) vv.textContent = Math.round(g.avgAting) + "%";
+      var vs = document.getElementById("vital-status-" + sk);
+      if (vs) vs.textContent = g.status;
+      var vitalEl = document.getElementById("vital-" + sk);
+      if (vitalEl) vitalEl.setAttribute("data-status", g.status);
+    });
+
+    // KPIs
+    var derivedAll = actions.map(computeDerived);
+    var atingGeral = derivedAll.length ? derivedAll.reduce(function(s,d){return s+d.atingimento;},0)/derivedAll.length : 0;
+    setText("kpi-ating", Math.round(atingGeral) + "%");
+    var criticos = groups.filter(function(g){ return g.status === "Crítico"; }).length;
+    setText("kpi-criticos", criticos + " / 4");
+
+    var today = new Date(); today.setHours(0,0,0,0);
+    var prazos = actions.map(function(a){ return a.prazo; }).filter(function(p){ return !!p; }).map(function(p){ return new Date(p+"T00:00:00"); }).filter(function(d){ return !isNaN(d) && d >= today; });
+    if (prazos.length){
+      prazos.sort(function(x,y){ return x-y; });
+      var nearest = prazos[0];
+      setText("kpi-prazo", nearest.toLocaleDateString("pt-BR"));
+      var diffDays = Math.round((nearest - today) / 86400000);
+      setText("kpi-prazo-note", diffDays === 0 ? "vence hoje" : ("em " + diffDays + " dia(s)"));
+    } else {
+      setText("kpi-prazo", "—");
+      setText("kpi-prazo-note", "nenhum prazo definido");
+    }
+
+    // donut
+    var counts = { "Crítico":0, "Atenção":0, "Em andamento":0, "Concluído":0 };
+    derivedAll.forEach(function(d){ counts[d.status]++; });
+    var total = derivedAll.length || 1;
+    var circumference = 2 * Math.PI * 62;
+    var offset = 0;
+    ["Crítico","Atenção","Em andamento","Concluído"].forEach(function(status){
+      var idKey = status.replace(/\s+/g,"-");
+      var seg = document.getElementById("seg-" + idKey);
+      var len = (counts[status] / total) * circumference;
+      if (seg){
+        seg.setAttribute("stroke-dasharray", len.toFixed(2) + " " + (circumference - len).toFixed(2));
+        seg.setAttribute("stroke-dashoffset", (-offset).toFixed(2));
+      }
+      setText("legend-" + idKey, counts[status]);
+      offset += len;
+    });
+    setText("donutCenterLabel", String(actions.length));
+
+    applyFilters();
+  }
+
+  function setText(id, text){ var el = document.getElementById(id); if (el) el.textContent = text; }
+  function setBar(id, pct, status){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.style.width = clamp(pct,0,100) + "%";
+    el.style.background = statusColor(status);
+    el.classList.toggle("full-round", pct >= 100);
+  }
+  function setPill(id, status){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = status;
+    el.className = "status-pill";
+    el.setAttribute("data-s", status);
+    el.style.background = { "Crítico":"var(--critico-soft)","Atenção":"var(--atencao-soft)","Em andamento":"var(--andamento-soft)","Concluído":"var(--concluido-soft)" }[status];
+    el.style.color = statusColor(status);
+  }
+
+  /* ---------------- FILTERS ---------------- */
+  function applyFilters(){
+    var groups = eixoGroups();
+    groups.forEach(function(g){
+      var sk = slug(g.key);
+      var anyVisible = false;
+      var actionsWrap = document.getElementById("actions-" + sk);
+      var rowsHtmlItems = g.items.slice();
+
+      // sort within eixo
+      rowsHtmlItems.sort(function(x,y){
+        var dx = computeDerived(x), dy = computeDerived(y);
+        if (filters.sort === "gapDesc") return dy.gap - dx.gap;
+        if (filters.sort === "atingAsc") return dx.atingimento - dy.atingimento;
+        return x.id.localeCompare(y.id, undefined, {numeric:true});
+      });
+      rowsHtmlItems.forEach(function(a){
+        var rowEl = document.getElementById("row-" + a.id);
+        if (rowEl) actionsWrap.appendChild(rowEl); // reorder in place
+      });
+
+      g.items.forEach(function(a){
+        var d = computeDerived(a);
+        var rowEl = document.getElementById("row-" + a.id);
+        if (!rowEl) return;
+        var matchesSearch = !filters.search || (a.id + " " + a.descricaoObjetivo + " " + a.acao + " " + a.indicador).toLowerCase().indexOf(filters.search) !== -1;
+        var matchesEixo = filters.eixo === "all" || a.eixo === filters.eixo;
+        var matchesStatus = filters.status === "all" || d.status === filters.status;
+        var matchesResp = filters.responsavel === "all" || a.responsavel === filters.responsavel;
+        var visible = matchesSearch && matchesEixo && matchesStatus && matchesResp;
+        rowEl.style.display = visible ? "" : "none";
+        if (visible) anyVisible = true;
+      });
+
+      var panelEl = document.getElementById("panel-" + sk);
+      if (panelEl) panelEl.style.display = (filters.eixo !== "all" && filters.eixo !== g.key) ? "none" : (anyVisible ? "" : (filters.search || filters.status !== "all" || filters.responsavel !== "all" ? "none" : ""));
+    });
+
+    var noneVisible = groups.every(function(g){
+      var p = document.getElementById("panel-" + slug(g.key));
+      return !p || p.style.display === "none";
+    });
+    var list = document.getElementById("eixosList");
+    var existingEmpty = document.getElementById("emptyState");
+    if (noneVisible){
+      if (!existingEmpty){
+        var div = document.createElement("div");
+        div.className = "panel empty-note";
+        div.id = "emptyState";
+        div.textContent = "Nenhuma ação encontrada para os filtros selecionados.";
+        list.appendChild(div);
+      }
+    } else if (existingEmpty){
+      existingEmpty.remove();
+    }
+  }
+
+  function attachControlHandlers(){
+    document.getElementById("searchInput").addEventListener("input", function(e){
+      filters.search = e.target.value.trim().toLowerCase();
+      applyFilters();
+    });
+    document.getElementById("filterEixo").addEventListener("change", function(e){
+      filters.eixo = e.target.value; applyFilters();
+    });
+    document.getElementById("filterStatus").addEventListener("change", function(e){
+      filters.status = e.target.value; applyFilters();
+    });
+    document.getElementById("filterResp").addEventListener("change", function(e){
+      filters.responsavel = e.target.value; applyFilters();
+    });
+    document.getElementById("sortSelect").addEventListener("change", function(e){
+      filters.sort = e.target.value; applyFilters();
+    });
+    document.getElementById("btnExport").addEventListener("click", exportCsv);
+    document.getElementById("btnPrint").addEventListener("click", function(){ window.print(); });
+    document.getElementById("btnReset").addEventListener("click", function(){
+      document.getElementById("resetModal").classList.add("open");
+    });
+    document.getElementById("cancelReset").addEventListener("click", function(){
+      document.getElementById("resetModal").classList.remove("open");
+    });
+    document.getElementById("confirmReset").addEventListener("click", function(){
+      actions = defaultActions();
+      document.getElementById("resetModal").classList.remove("open");
+      buildEixoPanels();
+      refreshDerivedAll();
+      scheduleSave();
+    });
+  }
+
+  function exportCsv(){
+    var headers = ["Eixo","Codigo","Descricao_Objetivo","Acao","Indicador","Percentual_Atual","Meta_12_Meses","GAP_pp","Percentual_Atingimento","Status","Responsavel","Data_Inicio","Data_Termino","Prazo","Observacoes"];
+    var lines = [headers.join(";")];
+    actions.forEach(function(a){
+      var d = computeDerived(a);
+      var row = [a.eixo, a.id, a.descricaoObjetivo, a.acao, a.indicador, a.atual, a.meta, d.gap, Math.round(d.atingimento), d.status, a.responsavel, a.dataInicio, a.dataTermino, a.prazo, a.observacoes];
+      lines.push(row.map(function(v){
+        var s = String(v==null?"":v).replace(/"/g,'""');
+        return /[;"\n]/.test(s) ? '"' + s + '"' : s;
+      }).join(";"));
+    });
+    var blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = "plano_acao_estrategico_itapema_" + new Date().toISOString().slice(0,10) + ".csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  /* ---------------- INIT ---------------- */
+  function init(){
+    loadState().then(function(saved){
+      if (saved && Array.isArray(saved.actions) && saved.actions.length){
+        var base = defaultActions();
+        actions = base.map(function(b){
+          var found = saved.actions.filter(function(s){ return s.id === b.id; })[0];
+          return found ? Object.assign({}, b, found) : b;
+        });
+        if (saved.updatedAt){
+          var d = new Date(saved.updatedAt);
+          document.getElementById("lastUpdatedNote").textContent = "Última atualização: " + d.toLocaleDateString("pt-BR") + " às " + String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+        }
+        var el = document.getElementById("syncStatus");
+        if (el) el.innerHTML = '<span class="dot"></span>Dados salvos carregados';
+      } else {
+        actions = defaultActions();
+        var el2 = document.getElementById("syncStatus");
+        if (el2) el2.innerHTML = '<span class="dot"></span>Linha de base da planilha';
+      }
+      buildAll();
+    });
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
