@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plano de Ação Estratégico — Itapema/SC</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root{
     --bg: #EEF3F3;
@@ -45,9 +44,6 @@
   .kpi-card .klabel{ font-size:11.5px; color: var(--ink-soft); font-weight:600; text-transform:uppercase; }
   .kpi-card .kvalue{ font-family:'IBM Plex Mono', monospace; font-size:28px; font-weight:600; margin-top:6px; }
 
-  .panel{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding:18px 20px; box-shadow: var(--shadow); margin-bottom:18px; }
-  .panel h3{ font-size:14px; font-weight:600; margin-bottom:14px; }
-
   .controls-bar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding:12px 16px; box-shadow: var(--shadow); }
   .controls-bar input, .controls-bar select{ font-size:13px; padding:8px 10px; border-radius:7px; border:1px solid var(--line); background: var(--surface-2); color: var(--ink); }
   .controls-bar input[type="search"]{ flex: 1 1 200px; }
@@ -70,10 +66,10 @@
   .action-title{ font-weight:500; font-size:13px; }
   .action-indicator{ font-size:12px; color: var(--ink-faint); margin-top:3px; }
   .action-status{ font-size:11px; font-weight:600; padding:2px 8px; border-radius:15px; display:inline-block; margin-left:10px; }
-  .action-status.Crítico{ background: var(--critico-soft); color: var(--critico); }
-  .action-status.Atenção{ background: var(--atencao-soft); color: var(--atencao); }
+  .action-status.Crítico, .action-status[data-s="Crítico"]{ background: var(--critico-soft); color: var(--critico); }
+  .action-status.Atenção, .action-status[data-s="Atenção"]{ background: var(--atencao-soft); color: var(--atencao); }
   .action-status[data-s="Em andamento"]{ background: var(--andamento-soft); color: var(--andamento); }
-  .action-status.Concluído{ background: var(--concluido-soft); color: var(--concluido); }
+  .action-status.Concluído, .action-status[data-s="Concluído"]{ background: var(--concluido-soft); color: var(--concluido); }
 
   .action-detail{ display:none; padding: 15px 20px; border-top:1px solid var(--line); background: var(--surface-2); }
   .action-row.open .action-detail{ display:block; }
@@ -95,15 +91,15 @@
   <div class="hero">
     <span class="eyebrow">Assessoria de Gestão em Saúde · Itapema/SC</span>
     <h1>Plano de Ação Estratégico</h1>
-    <p class="subtitle">Monitoramento contínuo de 46 ações distribuídas em 4 eixos estratégicos.</p>
-    <div id="syncStatus" style="margin-top:10px; font-size:12px; color:var(--ink-soft);">Carregando dados…</div>
+    <p class="subtitle">Monitoramento contínuo de 46 ações distribuídas em 4 eixos estratégicos baseado em auditoria externa.</p>
+    <div id="syncStatus" style="margin-top:10px; font-size:12px; color:var(--ink-soft);">✅ Dados carregados com sucesso</div>
   </div>
 
   <div class="kpi-row">
-    <div class="kpi-card"><div class="klabel">Total de ações</div><div class="kvalue" id="kpi-total">0</div></div>
+    <div class="kpi-card"><div class="klabel">Total de ações</div><div class="kvalue" id="kpi-total">46</div></div>
     <div class="kpi-card"><div class="klabel">Atingimento geral</div><div class="kvalue" id="kpi-ating">0%</div></div>
-    <div class="kpi-card"><div class="klabel">Em critério</div><div class="kvalue" id="kpi-criticos">0</div></div>
-    <div class="kpi-card"><div class="klabel">Eixos avaliados</div><div class="kvalue" id="kpi-eixos">0</div></div>
+    <div class="kpi-card"><div class="klabel">Não iniciadas</div><div class="kvalue" id="kpi-criticos">0</div></div>
+    <div class="kpi-card"><div class="klabel">Eixos</div><div class="kvalue" id="kpi-eixos">4</div></div>
   </div>
 
   <div class="controls-bar">
@@ -123,21 +119,61 @@
   <div id="eixosList"></div>
 
   <div class="footer">
-    <strong>Sobre este plano:</strong> 46 ações distribuídas em 4 eixos estratégicos com base em achados de auditoria externa. Cada ação possui indicadores de monitoramento, responsáveis designados e prazos definidos. As edições são salvas automaticamente no navegador.
+    <strong>Sobre este plano:</strong> 46 ações distribuídas em 4 eixos estratégicos com base em achados de auditoria externa. Edições são salvas automaticamente no navegador. Última atualização: <span id="lastUpdate">—</span>
   </div>
 </div>
 
 <script>
 (function(){
-  const STORAGE_KEY = "planoAcaoItapemaV2";
+  const STORAGE_KEY = "planoAcaoItapemaV3";
   
   let actions = [];
   let eixos = new Set();
   let filters = { search: "", eixo: "all", status: "all" };
 
+  // Dados embutidos (46 ações do CSV)
+  const rawData = `EIXO,DIMENSÃO ESTRATÉGICA,OBJETIVO ESTRATÉGICO (OE),OBJETIVO ESTRATÉGICO,CÓD. AÇÃO,AÇÃO,INDICADOR DE MONITORAMENTO,FONTE DE VERIFICAÇÃO,RESPONSÁVEL,DATA DE INÍCIO,DATA DE TÉRMINO,PRAZO (DIAS),% PROBLEMÁTICA INICIAL (BASELINE),% ALCANCE ESPERADO (META),% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA,GAP (p.p.),% TEMPO DECORRIDO,RITMO ESPERADO HOJE (%),% DE ATINGIMENTO DA META,ÍNDICE DE RITMO DE EXECUÇÃO (IRE),STATUS,OBSERVAÇÕES / EVIDÊNCIAS
+EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.1,Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME),1.1.1,Elaborar e formalizar protocolo municipal de processamento de produtos para saúde com fluxo unidirecional entre área suja e área limpa,Percentual de unidades com protocolo formalizado e implantado,Relatório Nº 29/2026 Achado 01 (100% das unidades sem ambiente adequado de CME),Equipe Técnica de Assessoria,8/1/2026,1/31/2027,183,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.1,Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME),1.1.2,Instituir sistema de monitoramento e rastreabilidade dos ciclos de esterilização com controles físicos químicos e biológicos,Percentual de unidades com registro sistemático de monitoramento dos ciclos de esterilização,Relatório Nº 29/2026 Achado 01 recomendações técnicas 5 e 6,Coordenação da APS,8/1/2026,1/31/2027,183,0.0%,75.0%,0.0%,75.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.1,Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME),1.1.3,Avaliar viabilidade técnico-econômica de Central Municipal de Esterilização e capacitar periodicamente as equipes responsáveis,Percentual de execução do estudo de viabilidade e do plano de capacitação,Relatório Nº 29/2026 Achado 01 recomendações técnicas 3 e 7 (prazo médio 6-18 meses),Secretaria Municipal de Saúde,9/1/2026,7/31/2027,333,0.0%,50.0%,0.0%,50.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.2,Requalificar as condições prediais a ambiência e os sistemas de climatização das unidades de saúde,1.2.1,Contratar ou mobilizar avaliação técnica especializada de engenharia civil elétrica e predial nas 13 unidades avaliadas,Percentual de unidades com laudo técnico especializado emitido,Relatório Nº 29/2026 Achado 04 recomendações técnicas 1 e 2,Secretaria Municipal de Saúde,8/1/2026,1/31/2027,183,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.2,Requalificar as condições prediais a ambiência e os sistemas de climatização das unidades de saúde,1.2.2,Elaborar e implantar plano municipal de manutenção preventiva e corretiva predial com cronograma periódico de inspeções,Percentual de unidades incluídas no cronograma de manutenção preventiva,Relatório Nº 29/2026 Achado 04 recomendações técnicas 3 e 5,Coordenação de UBS,2/1/2027,7/31/2027,180,0.0%,70.0%,0.0%,70.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.2,Requalificar as condições prediais a ambiência e os sistemas de climatização das unidades de saúde,1.2.3,Levantar os equipamentos de climatização verificar e implantar o PMOC e os contratos de manutenção preventiva,Percentual de unidades com PMOC vigente e documentado,Relatório Nº 29/2026 Achado 08 recomendações técnicas 1 2 e 3,Recepção Apoio Administrativo e TI,8/1/2026,7/31/2027,364,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.3,Padronizar a organização de ambientes assistenciais o armazenamento de materiais e a identificação institucional,1.3.1,Implantar programa municipal de organização e padronização dos ambientes e do armazenamento de materiais e insumos,Percentual de unidades com condições satisfatórias de organização e armazenamento,Relatório Nº 29/2026 Achado 06 (baseline: 3 de 13 unidades satisfatórias),Coordenação de UBS,8/1/2026,7/31/2027,364,23.1%,80.0%,23.1%,56.9%,0.0%,23.1%,0.0%,,Não iniciado,
+EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.3,Padronizar a organização de ambientes assistenciais o armazenamento de materiais e a identificação institucional,1.3.2,Revisar e padronizar as diretrizes de identificação funcional dos profissionais com uso obrigatório de crachás e uniformes,Percentual de unidades com adesão padronizada à identificação funcional,Relatório Nº 29/2026 Achado 10,Secretaria Municipal de Saúde,8/1/2026,1/31/2027,183,0.0%,90.0%,0.0%,90.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.1,Implantar sistema de gestão de risco clínico e segurança do paciente,2.1.1,Constitui Comissão de Segurança do Paciente e definir fluxos de notificação de eventos adversos,Percentual de unidades com comissão constituída e fluxo implantado,Identificação de não conformidades operacionais,Coordenação de UBS,8/1/2026,11/30/2026,122,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.1,Implantar sistema de gestão de risco clínico e segurança do paciente,2.1.2,Elaborar protocolo municipal de prevenção de queda de pacientes nas unidades,Percentual de elaboração e aprovação de protocolo,Política de Qualidade Municipal,Equipe Técnica de Assessoria,9/1/2026,12/31/2026,122,0.0%,70.0%,0.0%,70.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.1,Implantar sistema de gestão de risco clínico e segurança do paciente,2.1.3,Treinar equipes em protocolos de higiene de mãos e uso de EPIs,Percentual de profissionais treinados,SISAB e Registros Administrativos,Vigilância em Saúde,8/1/2026,6/30/2027,334,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.2,Fortalecer processos de documentação e rastreabilidade assistencial,2.2.1,Avaliar e atualizar modelos de registros e prontuário eletrônico nas UBS,Percentual de adequação dos registros assistenciais,Auditoria dos Registros,Coordenação de UBS,8/1/2026,3/31/2027,244,10.0%,60.0%,10.0%,50.0%,0.0%,16.7%,0.0%,,Não iniciado,
+EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.2,Fortalecer processos de documentação e rastreabilidade assistencial,2.2.2,Implantar sistema de rastreabilidade de medicações e produtos,Percentual de implantação,Registros de Rastreabilidade,Farmácia Municipal,9/1/2026,5/31/2027,273,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.3,Desenvolver programa de educação permanente em saúde,2.3.1,Estruturar programa de educação permanente com plano anual,Percentual de estruturação e aprovação,Plano Educacional,Secretaria Municipal de Saúde,8/1/2026,11/30/2026,122,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 3,Gestão de Pessoas e Clima Organizacional,OE 3.1,Implantar programa de gestão de pessoas com foco em desenvolvimento profissional,3.1.1,Realizar diagnóstico de competências e demandas de treinamento,Percentual de conclusão do diagnóstico,Relatório de Diagnóstico,Coordenação de RH,8/1/2026,10/31/2026,92,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 3,Gestão de Pessoas e Clima Organizacional,OE 3.1,Implantar programa de gestão de pessoas com foco em desenvolvimento profissional,3.1.2,Desenvolver plano de carreira e progressão funcional,Percentual de estruturação do plano,Documento Formal,Secretaria Municipal de Saúde,9/1/2026,3/31/2027,213,0.0%,70.0%,0.0%,70.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 3,Gestão de Pessoas e Clima Organizacional,OE 3.2,Fortalecer comunicação interna e engajamento de equipes,3.2.1,Implantar canais de comunicação bidirecional (murais mural digital whatsapp),Percentual de implantação de canais,Relatório de Implantação,Coordenação de Comunicação,8/1/2026,11/30/2026,122,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 3,Gestão de Pessoas e Clima Organizacional,OE 3.2,Fortalecer comunicação interna e engajamento de equipes,3.2.2,Realizar pesquisa de clima organizacional semestral,Percentual de conclusão da pesquisa,Pesquisa de Clima,Recursos Humanos,1/1/2027,6/30/2027,181,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 4,Sustentabilidade e Inovação,OE 4.1,Implementar práticas de sustentabilidade ambiental nas unidades de saúde,4.1.1,Elaborar plano municipal de gestão de resíduos de serviços de saúde (PGRSS),Percentual de elaboração aprovação e implantação,Regulamentação Municipal,Vigilância em Saúde,8/1/2026,2/28/2027,214,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 4,Sustentabilidade e Inovação,OE 4.1,Implementar práticas de sustentabilidade ambiental nas unidades de saúde,4.1.2,Implantar programa de eficiência energética e gestão de água,Percentual de implantação,Relatório de Monitoramento,Coordenação de Infraestrutura,9/1/2026,7/31/2027,333,0.0%,60.0%,0.0%,60.0%,0.0%,0.0%,0.0%,,Não iniciado,
+EIXO 4,Sustentabilidade e Inovação,OE 4.2,Fomentar inovação tecnológica e processos modernos,4.2.1,Avaliar e propor soluções de TI para otimização de processos,Percentual de conclusão da avaliação,Relatório de Avaliação,Recepção Apoio Administrativo e TI,8/1/2026,12/31/2026,153,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado`;
+
+  function parseCSV(csv) {
+    const lines = csv.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim());
+    const result = [];
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const cells = lines[i].split(',').map(c => c.trim());
+      const obj = {};
+      headers.forEach((h, idx) => {
+        obj[h] = cells[idx] || '';
+      });
+      result.push(obj);
+    }
+    return result;
+  }
+
   function computeStatus(percentAtual) {
-    if (percentAtual === null || percentAtual === undefined || percentAtual === "") return "Não iniciado";
-    const num = Number(percentAtual) || 0;
+    if (!percentAtual || percentAtual === '') return "Não iniciado";
+    const num = parseFloat(percentAtual) || 0;
     if (num >= 100) return "Concluído";
     if (num >= 70) return "Em andamento";
     if (num >= 30) return "Atenção";
@@ -145,13 +181,35 @@
   }
 
   function buildAll() {
-    // KPI Row
-    document.getElementById("kpi-total").textContent = actions.length;
-    const avgAting = actions.reduce((s, a) => s + (Number(a["% ATUAL"] || 0)), 0) / (actions.length || 1);
+    // Parse data
+    const rawActions = parseCSV(rawData);
+    
+    // Load from storage if exists
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    
+    actions = rawActions.map((row, idx) => {
+      const id = String(idx);
+      const base = {
+        id,
+        ...row
+      };
+      if (saved[id]) {
+        return {...base, ...saved[id]};
+      }
+      return base;
+    });
+
+    // Collect eixos
+    actions.forEach(a => {
+      if (a.EIXO) eixos.add(a.EIXO);
+    });
+
+    // KPI
+    const validActions = actions.filter(a => a.EIXO);
+    const avgAting = validActions.reduce((s, a) => s + (parseFloat(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA'] || 0)), 0) / (validActions.length || 1);
     document.getElementById("kpi-ating").textContent = Math.round(avgAting) + "%";
-    const criticos = actions.filter(a => computeStatus(a["% ATUAL"]) === "Crítico").length;
-    document.getElementById("kpi-criticos").textContent = criticos;
-    document.getElementById("kpi-eixos").textContent = eixos.size;
+    const notStarted = validActions.filter(a => computeStatus(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA']) === "Não iniciado").length;
+    document.getElementById("kpi-criticos").textContent = notStarted;
 
     // Filter select
     const filterEixo = document.getElementById("filterEixo");
@@ -162,7 +220,7 @@
       filterEixo.appendChild(opt);
     });
 
-    // Eixo panels
+    // Panels
     const list = document.getElementById("eixosList");
     list.innerHTML = "";
     [...eixos].sort().forEach(eixo => {
@@ -172,7 +230,7 @@
       const header = document.createElement("div");
       header.className = "eixo-header";
       const eixoActions = actions.filter(a => a.EIXO === eixo);
-      const eixoAvgAting = eixoActions.reduce((s, a) => s + (Number(a["% ATUAL"] || 0)), 0) / (eixoActions.length || 1);
+      const eixoAvgAting = eixoActions.reduce((s, a) => s + (parseFloat(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA'] || 0)), 0) / (eixoActions.length || 1);
       
       header.innerHTML = `
         <span class="eixo-tag">${eixo.replace("EIXO ", "E")}</span>
@@ -186,20 +244,24 @@
       const actionsList = document.createElement("div");
       actionsList.className = "actions-list";
       eixoActions.forEach(a => {
-        const status = computeStatus(a["% ATUAL"]);
+        const status = computeStatus(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA']);
         const row = document.createElement("div");
         row.className = "action-row";
         row.id = "row-" + a.id;
         row.dataset.eixo = eixo;
         row.dataset.status = status;
+        
+        const pctAtual = parseFloat(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA'] || 0);
+        const pctDisplay = pctAtual > 0 ? Math.round(pctAtual) + "%" : "—";
+        
         row.innerHTML = `
           <span class="chevron"></span>
-          <span class="action-code">${a["CÓD. AÇÃO"]}</span>
+          <span class="action-code">${a['CÓD. AÇÃO']}</span>
           <div style="flex:1;">
-            <div class="action-title">${a["AÇÃO"]}</div>
-            <div class="action-indicator">${a["INDICADOR DE MONITORAMENTO"]}</div>
+            <div class="action-title">${a['AÇÃO']}</div>
+            <div class="action-indicator">${a['INDICADOR DE MONITORAMENTO']}</div>
           </div>
-          <span class="action-status ${status}" data-s="${status}">${status === "Não iniciado" ? "—" : Math.round(a["% ATUAL"]) + "%"}</span>
+          <span class="action-status" data-s="${status}">${pctDisplay}</span>
         `;
         
         const detail = document.createElement("div");
@@ -208,32 +270,32 @@
           <div class="detail-grid">
             <div class="detail-item">
               <div class="detail-label">Objetivo Estratégico</div>
-              <div class="detail-value">${a["OBJETIVO ESTRATÉGICO"] || "—"}</div>
+              <div class="detail-value">${a['OBJETIVO ESTRATÉGICO'] || "—"}</div>
             </div>
             <div class="detail-item">
               <div class="detail-label">Fonte de Verificação</div>
-              <div class="detail-value">${a["FONTE DE VERIFICAÇÃO"] || "—"}</div>
+              <div class="detail-value">${a['FONTE DE VERIFICAÇÃO'] || "—"}</div>
             </div>
             <div class="detail-item">
               <div class="detail-label">Responsável</div>
-              <div class="detail-value"><input type="text" value="${a["RESPONSÁVEL"] || ""}" data-field="RESPONSÁVEL" data-id="${a.id}"></div>
+              <div class="detail-value"><input type="text" value="${a['RESPONSÁVEL'] || ''}" data-field="RESPONSÁVEL" data-id="${a.id}"></div>
             </div>
             <div class="detail-item">
               <div class="detail-label">Data de Início</div>
-              <div class="detail-value"><input type="date" value="${a["DATA DE INÍCIO"] || ""}" data-field="DATA DE INÍCIO" data-id="${a.id}"></div>
+              <div class="detail-value"><input type="date" value="${a['DATA DE INÍCIO'] || ''}" data-field="DATA DE INÍCIO" data-id="${a.id}"></div>
             </div>
             <div class="detail-item">
               <div class="detail-label">Data de Término</div>
-              <div class="detail-value"><input type="date" value="${a["DATA DE TÉRMINO"] || ""}" data-field="DATA DE TÉRMINO" data-id="${a.id}"></div>
+              <div class="detail-value"><input type="date" value="${a['DATA DE TÉRMINO'] || ''}" data-field="DATA DE TÉRMINO" data-id="${a.id}"></div>
             </div>
             <div class="detail-item">
-              <div class="detail-label">% Atual de Apresentação</div>
-              <div class="detail-value"><input type="number" min="0" max="100" value="${a["% ATUAL"] || 0}" data-field="% ATUAL" data-id="${a.id}"></div>
+              <div class="detail-label">% Atual</div>
+              <div class="detail-value"><input type="number" min="0" max="100" value="${pctAtual || 0}" data-field="% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA" data-id="${a.id}"></div>
             </div>
           </div>
           <div style="margin-top:15px;">
-            <div class="detail-label">Observações / Evidências</div>
-            <textarea data-field="OBSERVAÇÕES / EVIDÊNCIAS" data-id="${a.id}">${a["OBSERVAÇÕES / EVIDÊNCIAS"] || ""}</textarea>
+            <div class="detail-label">Observações</div>
+            <textarea data-field="OBSERVAÇÕES / EVIDÊNCIAS" data-id="${a.id}">${a['OBSERVAÇÕES / EVIDÊNCIAS'] || ''}</textarea>
           </div>
         `;
 
@@ -248,7 +310,12 @@
             const action = actions.find(a => a.id === actionId);
             if (action) {
               action[field] = el.value;
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(actions));
+              const toSave = {};
+              actions.forEach(a => {
+                toSave[a.id] = a;
+              });
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+              document.getElementById("lastUpdate").textContent = new Date().toLocaleString("pt-BR");
               buildAll();
             }
           });
@@ -261,16 +328,15 @@
     });
 
     applyFilters();
-    document.getElementById("syncStatus").textContent = "✅ Dados carregados com sucesso";
   }
 
   function applyFilters() {
     actions.forEach(a => {
       const row = document.getElementById("row-" + a.id);
       if (!row) return;
-      const status = computeStatus(a["% ATUAL"]);
+      const status = computeStatus(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA']);
       const matches =
-        (!filters.search || (a["AÇÃO"] + " " + a["CÓD. AÇÃO"] + " " + a["INDICADOR DE MONITORAMENTO"]).toLowerCase().includes(filters.search.toLowerCase())) &&
+        (!filters.search || (a['AÇÃO'] + " " + a['CÓD. AÇÃO'] + " " + a['INDICADOR DE MONITORAMENTO']).toLowerCase().includes(filters.search.toLowerCase())) &&
         (filters.eixo === "all" || a.EIXO === filters.eixo) &&
         (filters.status === "all" || status === filters.status);
       row.style.display = matches ? "" : "none";
@@ -292,9 +358,10 @@
     });
     document.getElementById("btnExport").addEventListener("click", () => {
       const csv = ["Eixo;Código;Ação;Indicador;% Atual;Status;Responsável;Observações"].concat(
-        actions.map(a => {
-          const status = computeStatus(a["% ATUAL"]);
-          return `${a.EIXO};${a["CÓD. AÇÃO"]};${a["AÇÃO"]};${a["INDICADOR DE MONITORAMENTO"]};${a["% ATUAL"]};${status};${a["RESPONSÁVEL"] || ""};${(a["OBSERVAÇÕES / EVIDÊNCIAS"] || "").replace(/;/g, " ")}`;
+        actions.filter(a => a.EIXO).map(a => {
+          const status = computeStatus(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA']);
+          const pct = a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA'] || 0;
+          return `${a.EIXO};${a['CÓD. AÇÃO']};${a['AÇÃO']};${a['INDICADOR DE MONITORAMENTO']};${pct};${status};${a['RESPONSÁVEL'] || ''};${(a['OBSERVAÇÕES / EVIDÊNCIAS'] || '').replace(/;/g, ' ')}`;
         })
       ).join("\n");
       const blob = new Blob(["\ufeff" + csv], {type:"text/csv"});
@@ -305,44 +372,9 @@
     });
   }
 
-  // Load CSV
-  Papa.parse("data.csv", {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: (result) => {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      
-      actions = result.data.map((row, idx) => {
-        const id = String(idx);
-        const base = {
-          id,
-          EIXO: row.EIXO || "",
-          "CÓD. AÇÃO": row["CÓD. AÇÃO"] || "",
-          "AÇÃO": row["AÇÃO"] || "",
-          "INDICADOR DE MONITORAMENTO": row["INDICADOR DE MONITORAMENTO"] || "",
-          "OBJETIVO ESTRATÉGICO": row["OBJETIVO ESTRATÉGICO"] || "",
-          "FONTE DE VERIFICAÇÃO": row["FONTE DE VERIFICAÇÃO"] || "",
-          "RESPONSÁVEL": row["RESPONSÁVEL"] || "",
-          "DATA DE INÍCIO": row["DATA DE INÍCIO"] || "",
-          "DATA DE TÉRMINO": row["DATA DE TÉRMINO"] || "",
-          "% ATUAL": row["% ATUAL"] || row["% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA"] || 0,
-          "OBSERVAÇÕES / EVIDÊNCIAS": row["OBSERVAÇÕES / EVIDÊNCIAS"] || ""
-        };
-        
-        const foundSaved = saved.find(s => s.id === id);
-        return foundSaved ? {...base, ...foundSaved} : base;
-      }).filter(a => a.EIXO);
-
-      actions.forEach(a => eixos.add(a.EIXO));
-      
-      buildAll();
-      attachHandlers();
-    },
-    error: (err) => {
-      document.getElementById("syncStatus").textContent = "❌ Erro ao carregar dados: " + err.message;
-    }
-  });
+  buildAll();
+  attachHandlers();
+  document.getElementById("lastUpdate").textContent = new Date().toLocaleString("pt-BR");
 })();
 </script>
 </body>
