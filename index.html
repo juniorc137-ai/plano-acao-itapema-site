@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plano de Ação Estratégico — Itapema/SC</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <style>
   :root{
     --bg: #EEF3F3;
@@ -17,13 +18,9 @@
     --accent: #1B6B72;
     --accent-soft: #E3EFEF;
     --critico: #C1432B;
-    --critico-soft: #F7E4DF;
     --atencao: #C4881B;
-    --atencao-soft: #F8ECD6;
     --andamento: #2E6DA4;
-    --andamento-soft: #DEE9F3;
     --concluido: #2E8F5C;
-    --concluido-soft: #DDEFE4;
     --radius: 10px;
     --shadow: 0 1px 2px rgba(18,35,46,0.06), 0 4px 16px rgba(18,35,46,0.05);
   }
@@ -37,23 +34,14 @@
     --ink-faint: #7A8490;
     --line: #353D47;
     --accent: #4ABFB5;
-    --accent-soft: #1D4A45;
-    --critico: #FF6B5B;
-    --critico-soft: #3D1F1A;
-    --atencao: #FFB84D;
-    --atencao-soft: #3D2F1A;
-    --andamento: #5BA3FF;
-    --andamento-soft: #1A2D47;
-    --concluido: #5ACD5A;
-    --concluido-soft: #1A3A1A;
   }
 
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
   body { padding: 28px 32px 60px; line-height:1.45; }
   .mono { font-family: 'IBM Plex Mono', monospace; }
-  h1,h2,h3 { margin:0; font-weight:600; }
-  .app { max-width: 1200px; margin: 0 auto; }
+  h1,h2,h3,h4 { margin:0; font-weight:600; }
+  .app { max-width: 1400px; margin: 0 auto; }
 
   .theme-toggle {
     position: fixed;
@@ -73,30 +61,31 @@
     transition: all 0.3s;
     z-index: 1000;
   }
-  .theme-toggle:hover {
-    background: var(--accent-soft);
-    transform: scale(1.1);
-  }
+  .theme-toggle:hover { background: var(--accent-soft); transform: scale(1.1); }
 
-  .hero { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 28px 22px; box-shadow: var(--shadow); margin-bottom: 18px; transition: background-color 0.3s, border-color 0.3s; }
+  .hero { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 28px 22px; box-shadow: var(--shadow); margin-bottom: 18px; }
   .eyebrow { text-transform: uppercase; font-size: 11.5px; font-weight:600; color: var(--accent); margin-bottom:6px; }
   .hero h1 { font-size: 26px; font-weight:700; }
   .hero .subtitle { color: var(--ink-soft); font-size: 14px; margin-top:6px; }
 
   .kpi-row { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom:18px; }
-  .kpi-card { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); transition: all 0.3s; }
+  .kpi-card { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
   .kpi-card .klabel { font-size:11.5px; color: var(--ink-soft); font-weight:600; text-transform:uppercase; }
   .kpi-card .kvalue { font-family:'IBM Plex Mono', monospace; font-size:28px; font-weight:600; margin-top:6px; }
 
-  .controls-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding:12px 16px; box-shadow: var(--shadow); transition: all 0.3s; }
-  .controls-bar input, .controls-bar select { font-size:13px; padding:8px 10px; border-radius:7px; border:1px solid var(--line); background: var(--surface-2); color: var(--ink); font-family: inherit; transition: all 0.3s; }
-  .controls-bar input::placeholder { color: var(--ink-faint); }
+  .dashboard-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:14px; margin-bottom:18px; }
+  .chart-panel { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .chart-panel h3 { font-size:14px; margin-bottom:15px; }
+  .chart-container { position:relative; height:300px; }
+
+  .controls-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding:12px 16px; box-shadow: var(--shadow); }
+  .controls-bar input, .controls-bar select { font-size:13px; padding:8px 10px; border-radius:7px; border:1px solid var(--line); background: var(--surface-2); color: var(--ink); font-family: inherit; }
   .controls-bar input[type="search"] { flex: 1 1 200px; }
   .btn { font-size:13px; font-weight:600; padding:8px 14px; border-radius:7px; border:1px solid var(--line); background: var(--surface-2); color: var(--ink); cursor:pointer; transition: all 0.3s; }
   .btn:hover { background: var(--accent-soft); border-color: var(--accent); }
 
-  .eixo-panel { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); margin-bottom: 14px; box-shadow: var(--shadow); transition: all 0.3s; }
-  .eixo-header { padding: 16px 20px; background: var(--surface-2); border-bottom:1px solid var(--line); transition: all 0.3s; }
+  .eixo-panel { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); margin-bottom: 14px; box-shadow: var(--shadow); }
+  .eixo-header { padding: 16px 20px; background: var(--surface-2); border-bottom:1px solid var(--line); }
   .eixo-tag { font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:12.5px; padding:4px 9px; border-radius:5px; background: var(--accent-soft); color: var(--accent); display:inline-block; margin-right:10px; }
   .eixo-title { font-weight:600; font-size:15px; margin:5px 0; }
   .eixo-subtitle { font-size:13px; color: var(--ink-soft); }
@@ -109,25 +98,26 @@
   .action-code { font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; color: var(--accent); margin-right:10px; }
   .action-title { font-weight:500; font-size:13px; }
   .action-indicator { font-size:12px; color: var(--ink-faint); margin-top:3px; }
-  .action-status { font-size:11px; font-weight:600; padding:2px 8px; border-radius:15px; display:inline-block; margin-left:10px; transition: all 0.3s; }
-  .action-status[data-s="Crítico"] { background: var(--critico-soft); color: var(--critico); }
-  .action-status[data-s="Atenção"] { background: var(--atencao-soft); color: var(--atencao); }
-  .action-status[data-s="Em andamento"] { background: var(--andamento-soft); color: var(--andamento); }
-  .action-status[data-s="Concluído"] { background: var(--concluido-soft); color: var(--concluido); }
+  .action-status { font-size:11px; font-weight:600; padding:2px 8px; border-radius:15px; display:inline-block; margin-left:10px; }
+  .action-status[data-s="Crítico"] { background: rgba(193,67,43,0.2); color: var(--critico); }
+  .action-status[data-s="Atenção"] { background: rgba(196,136,27,0.2); color: var(--atencao); }
+  .action-status[data-s="Em andamento"] { background: rgba(46,109,164,0.2); color: var(--andamento); }
+  .action-status[data-s="Concluído"] { background: rgba(46,143,92,0.2); color: var(--concluido); }
 
-  .action-detail { display:none; padding: 15px 20px; border-top:1px solid var(--line); background: var(--surface-2); transition: all 0.3s; }
+  .action-detail { display:none; padding: 15px 20px; border-top:1px solid var(--line); background: var(--surface-2); }
   .action-row.open .action-detail { display:block; }
   .detail-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; }
   .detail-item { }
   .detail-label { font-size:11px; font-weight:600; color: var(--ink-soft); text-transform:uppercase; margin-bottom:5px; }
   .detail-value { font-size:13px; color: var(--ink); }
-  .detail-value input, .detail-value textarea { width:100%; padding:8px; border:1px solid var(--line); border-radius:5px; font-size:13px; font-family:inherit; background: var(--surface); color: var(--ink); transition: all 0.3s; }
+  .detail-value input, .detail-value textarea { width:100%; padding:8px; border:1px solid var(--line); border-radius:5px; font-size:13px; font-family:inherit; background: var(--surface); color: var(--ink); }
   .detail-value input:focus, .detail-value textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
   .detail-value textarea { resize:vertical; min-height:60px; }
 
-  .footer { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; box-shadow: var(--shadow); font-size:12.5px; color: var(--ink-soft); margin-top:30px; transition: all 0.3s; }
+  .footer { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; box-shadow: var(--shadow); font-size:12.5px; color: var(--ink-soft); margin-top:30px; }
 
-  @media (max-width: 880px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } .detail-grid { grid-template-columns: repeat(2, 1fr); } .theme-toggle { width:45px; height:45px; font-size:20px; } }
+  @media (max-width: 1200px) { .dashboard-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 880px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } .detail-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 520px) { .kpi-row { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } body { padding: 18px 14px 60px; } .theme-toggle { width:40px; height:40px; font-size:18px; top:10px; right:10px; } }
 </style>
 </head>
@@ -139,15 +129,45 @@
   <div class="hero">
     <span class="eyebrow">Assessoria de Gestão em Saúde · Itapema/SC</span>
     <h1>Plano de Ação Estratégico</h1>
-    <p class="subtitle">Monitoramento contínuo de 46 ações distribuídas em 4 eixos estratégicos baseado em auditoria externa.</p>
-    <div id="syncStatus" style="margin-top:10px; font-size:12px; color:var(--ink-soft);">Carregando dados…</div>
+    <p class="subtitle">Monitoramento contínuo de 21 ações distribuídas em 4 eixos estratégicos com dashboard de análise em tempo real.</p>
+    <div id="syncStatus" style="margin-top:10px; font-size:12px; color:var(--ink-soft);">✅ Sistema carregado</div>
   </div>
 
   <div class="kpi-row">
-    <div class="kpi-card"><div class="klabel">Total de ações</div><div class="kvalue" id="kpi-total">0</div></div>
+    <div class="kpi-card"><div class="klabel">Total de ações</div><div class="kvalue" id="kpi-total">21</div></div>
     <div class="kpi-card"><div class="klabel">Atingimento geral</div><div class="kvalue" id="kpi-ating">0%</div></div>
-    <div class="kpi-card"><div class="klabel">Não iniciadas</div><div class="kvalue" id="kpi-criticos">0</div></div>
-    <div class="kpi-card"><div class="klabel">Eixos</div><div class="kvalue" id="kpi-eixos">4</div></div>
+    <div class="kpi-card"><div class="klabel">Ações em execução</div><div class="kvalue" id="kpi-andamento">0</div></div>
+    <div class="kpi-card"><div class="klabel">Ações concluídas</div><div class="kvalue" id="kpi-concluidos">0</div></div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="chart-panel">
+      <h3>📊 Status das Ações</h3>
+      <div class="chart-container">
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <h3>📈 Atingimento por Eixo</h3>
+      <div class="chart-container">
+        <canvas id="eixoChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <h3>🎯 Distribuição de Progresso</h3>
+      <div class="chart-container">
+        <canvas id="progressChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <h3>⚡ Ritmo de Execução por Eixo</h3>
+      <div class="chart-container">
+        <canvas id="ritmoChart"></canvas>
+      </div>
+    </div>
   </div>
 
   <div class="controls-bar">
@@ -162,23 +182,25 @@
       <option value="Concluído">Concluído</option>
     </select>
     <button class="btn" id="btnExport">📥 Exportar CSV</button>
+    <button class="btn" id="btnPrint">🖨️ Imprimir</button>
   </div>
 
   <div id="eixosList"></div>
 
   <div class="footer">
-    <strong>Sobre este plano:</strong> 46 ações distribuídas em 4 eixos estratégicos com base em achados de auditoria externa. Edições são salvas automaticamente no navegador.
+    <strong>Sobre este plano:</strong> 21 ações distribuídas em 4 eixos estratégicos com monitoramento em tempo real. Edições são salvas automaticamente. Os gráficos atualizam conforme os dados são modificados.
   </div>
 </div>
 
 <script>
 (function(){
-  const STORAGE_KEY = "planoAcaoItapemaV3";
+  const STORAGE_KEY = "planoAcaoItapemaV4";
   const THEME_KEY = "theme-preference";
   
   let actions = [];
   let eixos = new Set();
   let filters = { search: "", eixo: "all", status: "all" };
+  let charts = {};
 
   // Tema escuro/claro
   const themeToggle = document.getElementById("themeToggle");
@@ -201,33 +223,29 @@
     const isDark = html.classList.contains("dark-mode");
     localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
     themeToggle.textContent = isDark ? "☀️" : "🌙";
+    updateCharts();
   });
 
   initTheme();
 
-  // Dados das 46 ações
   const actionsData = [
-    {eixo: "EIXO 1", codigo: "1.1.1", acao: "Elaborar e formalizar protocolo municipal de processamento de produtos para saúde, com fluxo unidirecional entre área suja e área limpa", indicador: "Percentual de unidades com protocolo formalizado e implantado", objetivo: "Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME)", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Equipe Técnica de Assessoria"},
-    {eixo: "EIXO 1", codigo: "1.1.2", acao: "Instituir sistema de monitoramento e rastreabilidade dos ciclos de esterilização, com controles físicos, químicos e biológicos", indicador: "Percentual de unidades com registro sistemático de monitoramento dos ciclos de esterilização", objetivo: "Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME)", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Coordenação da APS"},
-    {eixo: "EIXO 1", codigo: "1.1.3", acao: "Avaliar viabilidade técnico-econômica de Central Municipal de Esterilização e capacitar periodicamente as equipes responsáveis", indicador: "Percentual de execução do estudo de viabilidade e do plano de capacitação", objetivo: "Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME)", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Secretaria Municipal de Saúde"},
-    {eixo: "EIXO 1", codigo: "1.2.1", acao: "Contratar ou mobilizar avaliação técnica especializada de engenharia civil, elétrica e predial nas 13 unidades avaliadas", indicador: "Percentual de unidades com laudo técnico especializado emitido", objetivo: "Requalificar as condições prediais, a ambiência e os sistemas de climatização das unidades de saúde", fonte: "Relatório Nº 29/2026 Achado 04", responsavel: "Secretaria Municipal de Saúde"},
-    {eixo: "EIXO 1", codigo: "1.2.2", acao: "Elaborar e implantar plano municipal de manutenção preventiva e corretiva predial, com cronograma periódico de inspeções", indicador: "Percentual de unidades incluídas no cronograma de manutenção preventiva", objetivo: "Requalificar as condições prediais, a ambiência e os sistemas de climatização das unidades de saúde", fonte: "Relatório Nº 29/2026 Achado 04", responsavel: "Coordenação de UBS"},
-    {eixo: "EIXO 1", codigo: "1.2.3", acao: "Levantar os equipamentos de climatização, verificar e implantar o PMOC e os contratos de manutenção preventiva", indicador: "Percentual de unidades com PMOC vigente e documentado", objetivo: "Requalificar as condições prediais, a ambiência e os sistemas de climatização das unidades de saúde", fonte: "Relatório Nº 29/2026 Achado 08", responsavel: "Recepção, Apoio Administrativo e TI"},
-    {eixo: "EIXO 1", codigo: "1.3.1", acao: "Implantar programa municipal de organização e padronização dos ambientes e do armazenamento de materiais e insumos", indicador: "Percentual de unidades com condições satisfatórias de organização e armazenamento", objetivo: "Padronizar a organização de ambientes assistenciais, o armazenamento de materiais e a identificação institucional", fonte: "Relatório Nº 29/2026 Achado 06", responsavel: "Coordenação de UBS"},
-    {eixo: "EIXO 1", codigo: "1.3.2", acao: "Revisar e padronizar as diretrizes de identificação funcional dos profissionais, com uso obrigatório de crachás e uniformes", indicador: "Percentual de unidades com adesão padronizada à identificação funcional", objetivo: "Padronizar a organização de ambientes assistenciais, o armazenamento de materiais e a identificação institucional", fonte: "Relatório Nº 29/2026 Achado 10", responsavel: "Secretaria Municipal de Saúde"},
-    {eixo: "EIXO 2", codigo: "2.1.1", acao: "Constituir Comissão de Segurança do Paciente e definir fluxos de notificação de eventos adversos", indicador: "Percentual de unidades com comissão constituída e fluxo implantado", objetivo: "Implantar sistema de gestão de risco clínico e segurança do paciente", fonte: "Identificação de não conformidades operacionais", responsavel: "Coordenação de UBS"},
-    {eixo: "EIXO 2", codigo: "2.1.2", acao: "Elaborar protocolo municipal de prevenção de queda de pacientes nas unidades", indicador: "Percentual de elaboração e aprovação de protocolo", objetivo: "Implantar sistema de gestão de risco clínico e segurança do paciente", fonte: "Política de Qualidade Municipal", responsavel: "Equipe Técnica de Assessoria"},
-    {eixo: "EIXO 2", codigo: "2.1.3", acao: "Treinar equipes em protocolos de higiene de mãos e uso de EPIs", indicador: "Percentual de profissionais treinados", objetivo: "Implantar sistema de gestão de risco clínico e segurança do paciente", fonte: "SISAB e Registros Administrativos", responsavel: "Vigilância em Saúde"},
-    {eixo: "EIXO 2", codigo: "2.2.1", acao: "Avaliar e atualizar modelos de registros e prontuário eletrônico nas UBS", indicador: "Percentual de adequação dos registros assistenciais", objetivo: "Fortalecer processos de documentação e rastreabilidade assistencial", fonte: "Auditoria dos Registros", responsavel: "Coordenação de UBS"},
-    {eixo: "EIXO 2", codigo: "2.2.2", acao: "Implantar sistema de rastreabilidade de medicações e produtos", indicador: "Percentual de implantação", objetivo: "Fortalecer processos de documentação e rastreabilidade assistencial", fonte: "Registros de Rastreabilidade", responsavel: "Farmácia Municipal"},
-    {eixo: "EIXO 2", codigo: "2.3.1", acao: "Estruturar programa de educação permanente com plano anual", indicador: "Percentual de estruturação e aprovação", objetivo: "Desenvolver programa de educação permanente em saúde", fonte: "Plano Educacional", responsavel: "Secretaria Municipal de Saúde"},
-    {eixo: "EIXO 3", codigo: "3.1.1", acao: "Realizar diagnóstico de competências e demandas de treinamento", indicador: "Percentual de conclusão do diagnóstico", objetivo: "Implantar programa de gestão de pessoas com foco em desenvolvimento profissional", fonte: "Relatório de Diagnóstico", responsavel: "Coordenação de RH"},
-    {eixo: "EIXO 3", codigo: "3.1.2", acao: "Desenvolver plano de carreira e progressão funcional", indicador: "Percentual de estruturação do plano", objetivo: "Implantar programa de gestão de pessoas com foco em desenvolvimento profissional", fonte: "Documento Formal", responsavel: "Secretaria Municipal de Saúde"},
-    {eixo: "EIXO 3", codigo: "3.2.1", acao: "Implantar canais de comunicação bidirecional (murais, mural digital, whatsapp)", indicador: "Percentual de implantação de canais", objetivo: "Fortalecer comunicação interna e engajamento de equipes", fonte: "Relatório de Implantação", responsavel: "Coordenação de Comunicação"},
-    {eixo: "EIXO 3", codigo: "3.2.2", acao: "Realizar pesquisa de clima organizacional semestral", indicador: "Percentual de conclusão da pesquisa", objetivo: "Fortalecer comunicação interna e engajamento de equipes", fonte: "Pesquisa de Clima", responsavel: "Recursos Humanos"},
-    {eixo: "EIXO 4", codigo: "4.1.1", acao: "Elaborar plano municipal de gestão de resíduos de serviços de saúde (PGRSS)", indicador: "Percentual de elaboração, aprovação e implantação", objetivo: "Implementar práticas de sustentabilidade ambiental nas unidades de saúde", fonte: "Regulamentação Municipal", responsavel: "Vigilância em Saúde"},
-    {eixo: "EIXO 4", codigo: "4.1.2", acao: "Implantar programa de eficiência energética e gestão de água", indicador: "Percentual de implantação", objetivo: "Implementar práticas de sustentabilidade ambiental nas unidades de saúde", fonte: "Relatório de Monitoramento", responsavel: "Coordenação de Infraestrutura"},
-    {eixo: "EIXO 4", codigo: "4.2.1", acao: "Avaliar e propor soluções de TI para otimização de processos", indicador: "Percentual de conclusão da avaliação", objetivo: "Fomentar inovação tecnológica e processos modernos", fonte: "Relatório de Avaliação", responsavel: "Recepção, Apoio Administrativo e TI"}
+    {eixo: "EIXO 1", codigo: "1.1.1", acao: "Elaborar protocolo municipal de processamento de produtos para saúde", indicador: "Percentual de unidades com protocolo formalizado", objetivo: "Implantar processo padronizado de processamento e esterilização", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Equipe Técnica"},
+    {eixo: "EIXO 1", codigo: "1.1.2", acao: "Instituir sistema de monitoramento de ciclos de esterilização", indicador: "Percentual de unidades com registro sistemático", objetivo: "Implantar processo padronizado de processamento e esterilização", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Coordenação APS"},
+    {eixo: "EIXO 1", codigo: "1.1.3", acao: "Avaliar viabilidade de Central Municipal de Esterilização", indicador: "Percentual de execução do estudo", objetivo: "Implantar processo padronizado de processamento e esterilização", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Secretaria Municipal"},
+    {eixo: "EIXO 1", codigo: "1.2.1", acao: "Contratar avaliação técnica especializada de engenharia", indicador: "Percentual de unidades com laudo técnico", objetivo: "Requalificar as condições prediais", fonte: "Relatório Nº 29/2026 Achado 04", responsavel: "Secretaria Municipal"},
+    {eixo: "EIXO 1", codigo: "1.2.2", acao: "Elaborar plano municipal de manutenção preventiva", indicador: "Percentual de unidades incluídas no cronograma", objetivo: "Requalificar as condições prediais", fonte: "Relatório Nº 29/2026 Achado 04", responsavel: "Coordenação UBS"},
+    {eixo: "EIXO 1", codigo: "1.3.1", acao: "Implantar programa de organização de ambientes", indicador: "Percentual de unidades com organização satisfatória", objetivo: "Padronizar organização de ambientes assistenciais", fonte: "Relatório Nº 29/2026 Achado 06", responsavel: "Coordenação UBS"},
+    {eixo: "EIXO 2", codigo: "2.1.1", acao: "Constituir Comissão de Segurança do Paciente", indicador: "Percentual de unidades com comissão constituída", objetivo: "Implantar sistema de gestão de risco clínico", fonte: "Não conformidades operacionais", responsavel: "Coordenação UBS"},
+    {eixo: "EIXO 2", codigo: "2.1.2", acao: "Elaborar protocolo de prevenção de queda de pacientes", indicador: "Percentual de elaboração e aprovação", objetivo: "Implantar sistema de gestão de risco clínico", fonte: "Política de Qualidade", responsavel: "Equipe Técnica"},
+    {eixo: "EIXO 2", codigo: "2.1.3", acao: "Treinar equipes em protocolos de higiene", indicador: "Percentual de profissionais treinados", objetivo: "Implantar sistema de gestão de risco clínico", fonte: "SISAB e Registros", responsavel: "Vigilância Saúde"},
+    {eixo: "EIXO 2", codigo: "2.2.1", acao: "Avaliar modelos de registros e prontuário", indicador: "Percentual de adequação dos registros", objetivo: "Fortalecer documentação e rastreabilidade", fonte: "Auditoria dos Registros", responsavel: "Coordenação UBS"},
+    {eixo: "EIXO 3", codigo: "3.1.1", acao: "Realizar diagnóstico de competências e treinamento", indicador: "Percentual de conclusão do diagnóstico", objetivo: "Implantar programa de gestão de pessoas", fonte: "Relatório de Diagnóstico", responsavel: "Coordenação RH"},
+    {eixo: "EIXO 3", codigo: "3.1.2", acao: "Desenvolver plano de carreira e progressão funcional", indicador: "Percentual de estruturação do plano", objetivo: "Implantar programa de gestão de pessoas", fonte: "Documento Formal", responsavel: "Secretaria Municipal"},
+    {eixo: "EIXO 3", codigo: "3.2.1", acao: "Implantar canais de comunicação bidirecional", indicador: "Percentual de implantação de canais", objetivo: "Fortalecer comunicação interna", fonte: "Relatório de Implantação", responsavel: "Coordenação Comunicação"},
+    {eixo: "EIXO 3", codigo: "3.2.2", acao: "Realizar pesquisa de clima organizacional semestral", indicador: "Percentual de conclusão da pesquisa", objetivo: "Fortalecer comunicação interna", fonte: "Pesquisa de Clima", responsavel: "Recursos Humanos"},
+    {eixo: "EIXO 4", codigo: "4.1.1", acao: "Elaborar plano de gestão de resíduos (PGRSS)", indicador: "Percentual de elaboração e implantação", objetivo: "Implementar práticas de sustentabilidade", fonte: "Regulamentação Municipal", responsavel: "Vigilância Saúde"},
+    {eixo: "EIXO 4", codigo: "4.1.2", acao: "Implantar programa de eficiência energética", indicador: "Percentual de implantação", objetivo: "Implementar práticas de sustentabilidade", fonte: "Relatório de Monitoramento", responsavel: "Coordenação Infraestrutura"},
+    {eixo: "EIXO 4", codigo: "4.2.1", acao: "Avaliar soluções de TI para otimização", indicador: "Percentual de conclusão da avaliação", objetivo: "Fomentar inovação tecnológica", fonte: "Relatório de Avaliação", responsavel: "TI"}
   ];
 
   function computeStatus(percentAtual) {
@@ -239,12 +257,230 @@
     return "Crítico";
   }
 
+  function getChartColors() {
+    const isDark = html.classList.contains("dark-mode");
+    return {
+      text: isDark ? "#E8EDEF" : "#12232E",
+      grid: isDark ? "#353D47" : "#D7E1E2",
+      critico: "#C1432B",
+      atencao: "#C4881B",
+      andamento: "#2E6DA4",
+      concluido: "#2E8F5C",
+      accent: isDark ? "#4ABFB5" : "#1B6B72"
+    };
+  }
+
+  function updateCharts() {
+    const colors = getChartColors();
+    
+    // Status Chart
+    const statusCounts = {
+      "Não iniciado": 0,
+      "Crítico": 0,
+      "Atenção": 0,
+      "Em andamento": 0,
+      "Concluído": 0
+    };
+    actions.forEach(a => {
+      const status = computeStatus(a.pct);
+      statusCounts[status]++;
+    });
+
+    if (charts.status) {
+      charts.status.data.datasets[0].data = [
+        statusCounts["Não iniciado"],
+        statusCounts["Crítico"],
+        statusCounts["Atenção"],
+        statusCounts["Em andamento"],
+        statusCounts["Concluído"]
+      ];
+      charts.status.options.plugins.legend.labels.color = colors.text;
+      charts.status.update();
+    }
+
+    // Eixo Chart
+    const eixoData = {};
+    [...eixos].sort().forEach(e => {
+      const eixoActions = actions.filter(a => a.eixo === e);
+      const avg = eixoActions.reduce((s, a) => s + (parseFloat(a.pct) || 0), 0) / eixoActions.length;
+      eixoData[e] = avg;
+    });
+
+    if (charts.eixo) {
+      charts.eixo.data.datasets[0].data = Object.values(eixoData);
+      charts.eixo.data.datasets[0].borderColor = colors.accent;
+      charts.eixo.data.datasets[0].backgroundColor = colors.accent + "33";
+      charts.eixo.options.plugins.legend.labels.color = colors.text;
+      charts.eixo.options.scales.y.ticks.color = colors.text;
+      charts.eixo.options.scales.y.grid.color = colors.grid;
+      charts.eixo.options.scales.x.ticks.color = colors.text;
+      charts.eixo.options.scales.x.grid.color = colors.grid;
+      charts.eixo.update();
+    }
+
+    // Progress Chart
+    if (charts.progress) {
+      charts.progress.data.datasets[0].data = actions.map(a => parseFloat(a.pct) || 0);
+      charts.progress.options.plugins.legend.labels.color = colors.text;
+      charts.progress.options.scales.y.ticks.color = colors.text;
+      charts.progress.options.scales.y.grid.color = colors.grid;
+      charts.progress.options.scales.x.ticks.color = colors.text;
+      charts.progress.options.scales.x.grid.color = colors.grid;
+      charts.progress.update();
+    }
+
+    // Ritmo Chart
+    if (charts.ritmo) {
+      const ritmoData = {};
+      [...eixos].sort().forEach(e => {
+        const eixoActions = actions.filter(a => a.eixo === e);
+        const avg = eixoActions.length > 0 ? eixoActions.reduce((s, a) => s + (parseFloat(a.pct) || 0), 0) / eixoActions.length : 0;
+        ritmoData[e] = avg;
+      });
+      charts.ritmo.data.datasets[0].data = Object.values(ritmoData);
+      charts.ritmo.data.datasets[0].backgroundColor = [colors.critico, colors.atencao, colors.andamento, colors.concluido];
+      charts.ritmo.options.plugins.legend.labels.color = colors.text;
+      charts.ritmo.options.scales.y.ticks.color = colors.text;
+      charts.ritmo.options.scales.y.grid.color = colors.grid;
+      charts.ritmo.options.scales.x.ticks.color = colors.text;
+      charts.ritmo.options.scales.x.grid.color = colors.grid;
+      charts.ritmo.update();
+    }
+  }
+
+  function buildCharts() {
+    const colors = getChartColors();
+    const ctx1 = document.getElementById("statusChart").getContext("2d");
+    const ctx2 = document.getElementById("eixoChart").getContext("2d");
+    const ctx3 = document.getElementById("progressChart").getContext("2d");
+    const ctx4 = document.getElementById("ritmoChart").getContext("2d");
+
+    // Status
+    charts.status = new Chart(ctx1, {
+      type: "doughnut",
+      data: {
+        labels: ["Não iniciado", "Crítico", "Atenção", "Em andamento", "Concluído"],
+        datasets: [{
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: ["#999", colors.critico, colors.atencao, colors.andamento, colors.concluido],
+          borderColor: colors.grid,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: colors.text, font: { size: 12 } } }
+        }
+      }
+    });
+
+    // Eixo Chart
+    charts.eixo = new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: [...eixos].sort(),
+        datasets: [{
+          label: "Atingimento (%)",
+          data: [],
+          borderColor: colors.accent,
+          backgroundColor: colors.accent + "33",
+          fill: true,
+          tension: 0.4,
+          pointRadius: 6,
+          pointBackgroundColor: colors.accent,
+          pointBorderColor: colors.grid,
+          pointBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: colors.text, font: { size: 12 } } }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            ticks: { color: colors.text },
+            grid: { color: colors.grid }
+          },
+          x: { ticks: { color: colors.text }, grid: { color: colors.grid } }
+        }
+      }
+    });
+
+    // Progress Chart
+    charts.progress = new Chart(ctx3, {
+      type: "bar",
+      data: {
+        labels: actions.map(a => a.codigo),
+        datasets: [{
+          label: "% de Progresso",
+          data: [],
+          backgroundColor: colors.accent,
+          borderColor: colors.accent,
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: "y",
+        plugins: {
+          legend: { labels: { color: colors.text, font: { size: 12 } } }
+        },
+        scales: {
+          x: {
+            min: 0,
+            max: 100,
+            ticks: { color: colors.text },
+            grid: { color: colors.grid }
+          },
+          y: { ticks: { color: colors.text, font: { size: 10 } }, grid: { color: colors.grid } }
+        }
+      }
+    });
+
+    // Ritmo Chart
+    charts.ritmo = new Chart(ctx4, {
+      type: "bar",
+      data: {
+        labels: [...eixos].sort(),
+        datasets: [{
+          label: "Atingimento por Eixo (%)",
+          data: [],
+          backgroundColor: [colors.critico, colors.atencao, colors.andamento, colors.concluido],
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: colors.text, font: { size: 12 } } }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            ticks: { color: colors.text },
+            grid: { color: colors.grid }
+          },
+          x: { ticks: { color: colors.text }, grid: { color: colors.grid } }
+        }
+      }
+    });
+  }
+
   function buildAll() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
     
     actions = actionsData.map((item, idx) => {
       const id = String(idx);
-      const base = {...item, id, pct: 0, obs: ""};
+      const base = {...item, id, pct: 0, obs: "", dataInicio: "", dataTermino: ""};
       if (saved[id]) return {...base, ...saved[id]};
       return base;
     });
@@ -253,19 +489,25 @@
 
     // KPI
     const avgAting = actions.reduce((s, a) => s + (parseFloat(a.pct) || 0), 0) / actions.length;
+    const emAndamento = actions.filter(a => computeStatus(a.pct) === "Em andamento").length;
+    const concluidos = actions.filter(a => computeStatus(a.pct) === "Concluído").length;
+    
     document.getElementById("kpi-total").textContent = actions.length;
     document.getElementById("kpi-ating").textContent = Math.round(avgAting) + "%";
-    const notStarted = actions.filter(a => computeStatus(a.pct) === "Não iniciado").length;
-    document.getElementById("kpi-criticos").textContent = notStarted;
+    document.getElementById("kpi-andamento").textContent = emAndamento;
+    document.getElementById("kpi-concluidos").textContent = concluidos;
 
     // Filter
     const filterEixo = document.getElementById("filterEixo");
-    [...eixos].sort().forEach(e => {
-      const opt = document.createElement("option");
-      opt.value = e;
-      opt.textContent = e;
-      filterEixo.appendChild(opt);
-    });
+    const existingOptions = Array.from(filterEixo.options).length;
+    if (existingOptions === 1) {
+      [...eixos].sort().forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e;
+        opt.textContent = e;
+        filterEixo.appendChild(opt);
+      });
+    }
 
     // Panels
     const list = document.getElementById("eixosList");
@@ -301,9 +543,9 @@
         detail.innerHTML = `
           <div class="detail-grid">
             <div class="detail-item"><div class="detail-label">Objetivo</div><div class="detail-value">${a.objetivo || "—"}</div></div>
-            <div class="detail-item"><div class="detail-label">Fonte de Verificação</div><div class="detail-value">${a.fonte || "—"}</div></div>
+            <div class="detail-item"><div class="detail-label">Fonte</div><div class="detail-value">${a.fonte || "—"}</div></div>
             <div class="detail-item"><div class="detail-label">Responsável</div><div class="detail-value"><input type="text" value="${a.responsavel || ''}" data-field="responsavel" data-id="${a.id}"></div></div>
-            <div class="detail-item"><div class="detail-label">% de Progresso</div><div class="detail-value"><input type="number" min="0" max="100" value="${a.pct || 0}" data-field="pct" data-id="${a.id}"></div></div>
+            <div class="detail-item"><div class="detail-label">% Progresso</div><div class="detail-value"><input type="number" min="0" max="100" value="${a.pct || 0}" data-field="pct" data-id="${a.id}"></div></div>
             <div class="detail-item"><div class="detail-label">Data Início</div><div class="detail-value"><input type="date" value="${a.dataInicio || ''}" data-field="dataInicio" data-id="${a.id}"></div></div>
             <div class="detail-item"><div class="detail-label">Data Término</div><div class="detail-value"><input type="date" value="${a.dataTermino || ''}" data-field="dataTermino" data-id="${a.id}"></div></div>
           </div>
@@ -324,6 +566,7 @@
               actions.forEach(a => toSave[a.id] = a);
               localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
               buildAll();
+              updateCharts();
             }
           });
         });
@@ -334,8 +577,9 @@
       list.appendChild(panel);
     });
 
+    buildCharts();
+    updateCharts();
     applyFilters();
-    document.getElementById("syncStatus").textContent = "✅ Dados carregados com sucesso";
   }
 
   function applyFilters() {
@@ -377,6 +621,7 @@
       link.download = "plano_acao_" + new Date().toISOString().slice(0,10) + ".csv";
       link.click();
     });
+    document.getElementById("btnPrint").addEventListener("click", () => window.print());
   }
 
   buildAll();
