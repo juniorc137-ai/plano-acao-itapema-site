@@ -27,76 +27,124 @@
     --radius: 10px;
     --shadow: 0 1px 2px rgba(18,35,46,0.06), 0 4px 16px rgba(18,35,46,0.05);
   }
-  *{ box-sizing: border-box; }
-  html,body{ margin:0; padding:0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', sans-serif; }
-  body{ padding: 28px 32px 60px; line-height:1.45; }
-  .mono{ font-family: 'IBM Plex Mono', monospace; }
-  h1,h2,h3{ margin:0; font-weight:600; }
-  .app{ max-width: 1200px; margin: 0 auto; }
+  
+  html.dark-mode {
+    --bg: #0F1419;
+    --surface: #1A1F27;
+    --surface-2: #242B35;
+    --ink: #E8EDEF;
+    --ink-soft: #A8B2BA;
+    --ink-faint: #7A8490;
+    --line: #353D47;
+    --accent: #4ABFB5;
+    --accent-soft: #1D4A45;
+    --critico: #FF6B5B;
+    --critico-soft: #3D1F1A;
+    --atencao: #FFB84D;
+    --atencao-soft: #3D2F1A;
+    --andamento: #5BA3FF;
+    --andamento-soft: #1A2D47;
+    --concluido: #5ACD5A;
+    --concluido-soft: #1A3A1A;
+  }
 
-  .hero{ background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 28px 22px; box-shadow: var(--shadow); margin-bottom: 18px; }
-  .eyebrow{ text-transform: uppercase; font-size: 11.5px; font-weight:600; color: var(--accent); margin-bottom:6px; }
-  .hero h1{ font-size: 26px; font-weight:700; }
-  .hero .subtitle{ color: var(--ink-soft); font-size: 14px; margin-top:6px; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
+  body { padding: 28px 32px 60px; line-height:1.45; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  h1,h2,h3 { margin:0; font-weight:600; }
+  .app { max-width: 1200px; margin: 0 auto; }
 
-  .kpi-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom:18px; }
-  .kpi-card{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
-  .kpi-card .klabel{ font-size:11.5px; color: var(--ink-soft); font-weight:600; text-transform:uppercase; }
-  .kpi-card .kvalue{ font-family:'IBM Plex Mono', monospace; font-size:28px; font-weight:600; margin-top:6px; }
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s;
+    z-index: 1000;
+  }
+  .theme-toggle:hover {
+    background: var(--accent-soft);
+    transform: scale(1.1);
+  }
 
-  .controls-bar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding:12px 16px; box-shadow: var(--shadow); }
-  .controls-bar input, .controls-bar select{ font-size:13px; padding:8px 10px; border-radius:7px; border:1px solid var(--line); background: var(--surface-2); color: var(--ink); }
-  .controls-bar input[type="search"]{ flex: 1 1 200px; }
-  .btn{ font-size:13px; font-weight:600; padding:8px 14px; border-radius:7px; border:1px solid var(--line); background: var(--surface-2); color: var(--ink); cursor:pointer; }
-  .btn:hover{ background: var(--accent-soft); }
+  .hero { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 28px 22px; box-shadow: var(--shadow); margin-bottom: 18px; transition: background-color 0.3s, border-color 0.3s; }
+  .eyebrow { text-transform: uppercase; font-size: 11.5px; font-weight:600; color: var(--accent); margin-bottom:6px; }
+  .hero h1 { font-size: 26px; font-weight:700; }
+  .hero .subtitle { color: var(--ink-soft); font-size: 14px; margin-top:6px; }
 
-  .eixo-panel{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); margin-bottom: 14px; box-shadow: var(--shadow); }
-  .eixo-header{ padding: 16px 20px; background: var(--surface-2); border-bottom:1px solid var(--line); }
-  .eixo-tag{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:12.5px; padding:4px 9px; border-radius:5px; background: var(--accent-soft); color: var(--accent); display:inline-block; margin-right:10px; }
-  .eixo-title{ font-weight:600; font-size:15px; margin:5px 0; }
-  .eixo-subtitle{ font-size:13px; color: var(--ink-soft); }
+  .kpi-row { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom:18px; }
+  .kpi-card { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); transition: all 0.3s; }
+  .kpi-card .klabel { font-size:11.5px; color: var(--ink-soft); font-weight:600; text-transform:uppercase; }
+  .kpi-card .kvalue { font-family:'IBM Plex Mono', monospace; font-size:28px; font-weight:600; margin-top:6px; }
 
-  .actions-list{ border-top:1px solid var(--line); }
-  .action-row{ border-bottom:1px solid var(--line); padding: 13px 20px; cursor:pointer; }
-  .action-row:hover{ background: var(--surface-2); }
-  .action-row.open{ background: var(--surface-2); }
-  .chevron{ display:inline-block; width:8px; height:8px; border-right:2px solid var(--ink-soft); border-bottom:2px solid var(--ink-soft); transform: rotate(-45deg); margin-right:10px; transition: transform .2s; }
-  .action-row.open .chevron{ transform: rotate(45deg); }
-  .action-code{ font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; color: var(--accent); margin-right:10px; }
-  .action-title{ font-weight:500; font-size:13px; }
-  .action-indicator{ font-size:12px; color: var(--ink-faint); margin-top:3px; }
-  .action-status{ font-size:11px; font-weight:600; padding:2px 8px; border-radius:15px; display:inline-block; margin-left:10px; }
-  .action-status.Crítico, .action-status[data-s="Crítico"]{ background: var(--critico-soft); color: var(--critico); }
-  .action-status.Atenção, .action-status[data-s="Atenção"]{ background: var(--atencao-soft); color: var(--atencao); }
-  .action-status[data-s="Em andamento"]{ background: var(--andamento-soft); color: var(--andamento); }
-  .action-status.Concluído, .action-status[data-s="Concluído"]{ background: var(--concluido-soft); color: var(--concluido); }
+  .controls-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding:12px 16px; box-shadow: var(--shadow); transition: all 0.3s; }
+  .controls-bar input, .controls-bar select { font-size:13px; padding:8px 10px; border-radius:7px; border:1px solid var(--line); background: var(--surface-2); color: var(--ink); font-family: inherit; transition: all 0.3s; }
+  .controls-bar input::placeholder { color: var(--ink-faint); }
+  .controls-bar input[type="search"] { flex: 1 1 200px; }
+  .btn { font-size:13px; font-weight:600; padding:8px 14px; border-radius:7px; border:1px solid var(--line); background: var(--surface-2); color: var(--ink); cursor:pointer; transition: all 0.3s; }
+  .btn:hover { background: var(--accent-soft); border-color: var(--accent); }
 
-  .action-detail{ display:none; padding: 15px 20px; border-top:1px solid var(--line); background: var(--surface-2); }
-  .action-row.open .action-detail{ display:block; }
-  .detail-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; }
-  .detail-item{ }
-  .detail-label{ font-size:11px; font-weight:600; color: var(--ink-soft); text-transform:uppercase; margin-bottom:5px; }
-  .detail-value{ font-size:13px; color: var(--ink); }
-  .detail-value input, .detail-value textarea{ width:100%; padding:8px; border:1px solid var(--line); border-radius:5px; font-size:13px; font-family:inherit; }
-  .detail-value textarea{ resize:vertical; min-height:60px; }
+  .eixo-panel { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); margin-bottom: 14px; box-shadow: var(--shadow); transition: all 0.3s; }
+  .eixo-header { padding: 16px 20px; background: var(--surface-2); border-bottom:1px solid var(--line); transition: all 0.3s; }
+  .eixo-tag { font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:12.5px; padding:4px 9px; border-radius:5px; background: var(--accent-soft); color: var(--accent); display:inline-block; margin-right:10px; }
+  .eixo-title { font-weight:600; font-size:15px; margin:5px 0; }
+  .eixo-subtitle { font-size:13px; color: var(--ink-soft); }
 
-  .footer{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; box-shadow: var(--shadow); font-size:12.5px; color: var(--ink-soft); margin-top:30px; }
+  .actions-list { border-top:1px solid var(--line); }
+  .action-row { border-bottom:1px solid var(--line); padding: 13px 20px; cursor:pointer; transition: all 0.3s; }
+  .action-row:hover { background: var(--surface-2); }
+  .chevron { display:inline-block; width:8px; height:8px; border-right:2px solid var(--ink-soft); border-bottom:2px solid var(--ink-soft); transform: rotate(-45deg); margin-right:10px; transition: transform .2s; }
+  .action-row.open .chevron { transform: rotate(45deg); }
+  .action-code { font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; color: var(--accent); margin-right:10px; }
+  .action-title { font-weight:500; font-size:13px; }
+  .action-indicator { font-size:12px; color: var(--ink-faint); margin-top:3px; }
+  .action-status { font-size:11px; font-weight:600; padding:2px 8px; border-radius:15px; display:inline-block; margin-left:10px; transition: all 0.3s; }
+  .action-status[data-s="Crítico"] { background: var(--critico-soft); color: var(--critico); }
+  .action-status[data-s="Atenção"] { background: var(--atencao-soft); color: var(--atencao); }
+  .action-status[data-s="Em andamento"] { background: var(--andamento-soft); color: var(--andamento); }
+  .action-status[data-s="Concluído"] { background: var(--concluido-soft); color: var(--concluido); }
 
-  @media (max-width: 880px){ .kpi-row{ grid-template-columns: repeat(2, 1fr); } .detail-grid{ grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 520px){ .kpi-row{ grid-template-columns: 1fr; } .detail-grid{ grid-template-columns: 1fr; } }
+  .action-detail { display:none; padding: 15px 20px; border-top:1px solid var(--line); background: var(--surface-2); transition: all 0.3s; }
+  .action-row.open .action-detail { display:block; }
+  .detail-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; }
+  .detail-item { }
+  .detail-label { font-size:11px; font-weight:600; color: var(--ink-soft); text-transform:uppercase; margin-bottom:5px; }
+  .detail-value { font-size:13px; color: var(--ink); }
+  .detail-value input, .detail-value textarea { width:100%; padding:8px; border:1px solid var(--line); border-radius:5px; font-size:13px; font-family:inherit; background: var(--surface); color: var(--ink); transition: all 0.3s; }
+  .detail-value input:focus, .detail-value textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .detail-value textarea { resize:vertical; min-height:60px; }
+
+  .footer { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; box-shadow: var(--shadow); font-size:12.5px; color: var(--ink-soft); margin-top:30px; transition: all 0.3s; }
+
+  @media (max-width: 880px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } .detail-grid { grid-template-columns: repeat(2, 1fr); } .theme-toggle { width:45px; height:45px; font-size:20px; } }
+  @media (max-width: 520px) { .kpi-row { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } body { padding: 18px 14px 60px; } .theme-toggle { width:40px; height:40px; font-size:18px; top:10px; right:10px; } }
 </style>
 </head>
 <body>
+
+<button class="theme-toggle" id="themeToggle" title="Alternar tema">🌙</button>
+
 <div class="app">
   <div class="hero">
     <span class="eyebrow">Assessoria de Gestão em Saúde · Itapema/SC</span>
     <h1>Plano de Ação Estratégico</h1>
     <p class="subtitle">Monitoramento contínuo de 46 ações distribuídas em 4 eixos estratégicos baseado em auditoria externa.</p>
-    <div id="syncStatus" style="margin-top:10px; font-size:12px; color:var(--ink-soft);">✅ Dados carregados com sucesso</div>
+    <div id="syncStatus" style="margin-top:10px; font-size:12px; color:var(--ink-soft);">Carregando dados…</div>
   </div>
 
   <div class="kpi-row">
-    <div class="kpi-card"><div class="klabel">Total de ações</div><div class="kvalue" id="kpi-total">46</div></div>
+    <div class="kpi-card"><div class="klabel">Total de ações</div><div class="kvalue" id="kpi-total">0</div></div>
     <div class="kpi-card"><div class="klabel">Atingimento geral</div><div class="kvalue" id="kpi-ating">0%</div></div>
     <div class="kpi-card"><div class="klabel">Não iniciadas</div><div class="kvalue" id="kpi-criticos">0</div></div>
     <div class="kpi-card"><div class="klabel">Eixos</div><div class="kvalue" id="kpi-eixos">4</div></div>
@@ -119,60 +167,71 @@
   <div id="eixosList"></div>
 
   <div class="footer">
-    <strong>Sobre este plano:</strong> 46 ações distribuídas em 4 eixos estratégicos com base em achados de auditoria externa. Edições são salvas automaticamente no navegador. Última atualização: <span id="lastUpdate">—</span>
+    <strong>Sobre este plano:</strong> 46 ações distribuídas em 4 eixos estratégicos com base em achados de auditoria externa. Edições são salvas automaticamente no navegador.
   </div>
 </div>
 
 <script>
 (function(){
   const STORAGE_KEY = "planoAcaoItapemaV3";
+  const THEME_KEY = "theme-preference";
   
   let actions = [];
   let eixos = new Set();
   let filters = { search: "", eixo: "all", status: "all" };
 
-  // Dados embutidos (46 ações do CSV)
-  const rawData = `EIXO,DIMENSÃO ESTRATÉGICA,OBJETIVO ESTRATÉGICO (OE),OBJETIVO ESTRATÉGICO,CÓD. AÇÃO,AÇÃO,INDICADOR DE MONITORAMENTO,FONTE DE VERIFICAÇÃO,RESPONSÁVEL,DATA DE INÍCIO,DATA DE TÉRMINO,PRAZO (DIAS),% PROBLEMÁTICA INICIAL (BASELINE),% ALCANCE ESPERADO (META),% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA,GAP (p.p.),% TEMPO DECORRIDO,RITMO ESPERADO HOJE (%),% DE ATINGIMENTO DA META,ÍNDICE DE RITMO DE EXECUÇÃO (IRE),STATUS,OBSERVAÇÕES / EVIDÊNCIAS
-EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.1,Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME),1.1.1,Elaborar e formalizar protocolo municipal de processamento de produtos para saúde com fluxo unidirecional entre área suja e área limpa,Percentual de unidades com protocolo formalizado e implantado,Relatório Nº 29/2026 Achado 01 (100% das unidades sem ambiente adequado de CME),Equipe Técnica de Assessoria,8/1/2026,1/31/2027,183,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.1,Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME),1.1.2,Instituir sistema de monitoramento e rastreabilidade dos ciclos de esterilização com controles físicos químicos e biológicos,Percentual de unidades com registro sistemático de monitoramento dos ciclos de esterilização,Relatório Nº 29/2026 Achado 01 recomendações técnicas 5 e 6,Coordenação da APS,8/1/2026,1/31/2027,183,0.0%,75.0%,0.0%,75.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.1,Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME),1.1.3,Avaliar viabilidade técnico-econômica de Central Municipal de Esterilização e capacitar periodicamente as equipes responsáveis,Percentual de execução do estudo de viabilidade e do plano de capacitação,Relatório Nº 29/2026 Achado 01 recomendações técnicas 3 e 7 (prazo médio 6-18 meses),Secretaria Municipal de Saúde,9/1/2026,7/31/2027,333,0.0%,50.0%,0.0%,50.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.2,Requalificar as condições prediais a ambiência e os sistemas de climatização das unidades de saúde,1.2.1,Contratar ou mobilizar avaliação técnica especializada de engenharia civil elétrica e predial nas 13 unidades avaliadas,Percentual de unidades com laudo técnico especializado emitido,Relatório Nº 29/2026 Achado 04 recomendações técnicas 1 e 2,Secretaria Municipal de Saúde,8/1/2026,1/31/2027,183,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.2,Requalificar as condições prediais a ambiência e os sistemas de climatização das unidades de saúde,1.2.2,Elaborar e implantar plano municipal de manutenção preventiva e corretiva predial com cronograma periódico de inspeções,Percentual de unidades incluídas no cronograma de manutenção preventiva,Relatório Nº 29/2026 Achado 04 recomendações técnicas 3 e 5,Coordenação de UBS,2/1/2027,7/31/2027,180,0.0%,70.0%,0.0%,70.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.2,Requalificar as condições prediais a ambiência e os sistemas de climatização das unidades de saúde,1.2.3,Levantar os equipamentos de climatização verificar e implantar o PMOC e os contratos de manutenção preventiva,Percentual de unidades com PMOC vigente e documentado,Relatório Nº 29/2026 Achado 08 recomendações técnicas 1 2 e 3,Recepção Apoio Administrativo e TI,8/1/2026,7/31/2027,364,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.3,Padronizar a organização de ambientes assistenciais o armazenamento de materiais e a identificação institucional,1.3.1,Implantar programa municipal de organização e padronização dos ambientes e do armazenamento de materiais e insumos,Percentual de unidades com condições satisfatórias de organização e armazenamento,Relatório Nº 29/2026 Achado 06 (baseline: 3 de 13 unidades satisfatórias),Coordenação de UBS,8/1/2026,7/31/2027,364,23.1%,80.0%,23.1%,56.9%,0.0%,23.1%,0.0%,,Não iniciado,
-EIXO 1,Infraestrutura Segurança dos Processos e Ambiência das Unidades de Saúde,OE 1.3,Padronizar a organização de ambientes assistenciais o armazenamento de materiais e a identificação institucional,1.3.2,Revisar e padronizar as diretrizes de identificação funcional dos profissionais com uso obrigatório de crachás e uniformes,Percentual de unidades com adesão padronizada à identificação funcional,Relatório Nº 29/2026 Achado 10,Secretaria Municipal de Saúde,8/1/2026,1/31/2027,183,0.0%,90.0%,0.0%,90.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.1,Implantar sistema de gestão de risco clínico e segurança do paciente,2.1.1,Constitui Comissão de Segurança do Paciente e definir fluxos de notificação de eventos adversos,Percentual de unidades com comissão constituída e fluxo implantado,Identificação de não conformidades operacionais,Coordenação de UBS,8/1/2026,11/30/2026,122,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.1,Implantar sistema de gestão de risco clínico e segurança do paciente,2.1.2,Elaborar protocolo municipal de prevenção de queda de pacientes nas unidades,Percentual de elaboração e aprovação de protocolo,Política de Qualidade Municipal,Equipe Técnica de Assessoria,9/1/2026,12/31/2026,122,0.0%,70.0%,0.0%,70.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.1,Implantar sistema de gestão de risco clínico e segurança do paciente,2.1.3,Treinar equipes em protocolos de higiene de mãos e uso de EPIs,Percentual de profissionais treinados,SISAB e Registros Administrativos,Vigilância em Saúde,8/1/2026,6/30/2027,334,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.2,Fortalecer processos de documentação e rastreabilidade assistencial,2.2.1,Avaliar e atualizar modelos de registros e prontuário eletrônico nas UBS,Percentual de adequação dos registros assistenciais,Auditoria dos Registros,Coordenação de UBS,8/1/2026,3/31/2027,244,10.0%,60.0%,10.0%,50.0%,0.0%,16.7%,0.0%,,Não iniciado,
-EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.2,Fortalecer processos de documentação e rastreabilidade assistencial,2.2.2,Implantar sistema de rastreabilidade de medicações e produtos,Percentual de implantação,Registros de Rastreabilidade,Farmácia Municipal,9/1/2026,5/31/2027,273,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 2,Qualidade e Segurança dos Processos Assistenciais,OE 2.3,Desenvolver programa de educação permanente em saúde,2.3.1,Estruturar programa de educação permanente com plano anual,Percentual de estruturação e aprovação,Plano Educacional,Secretaria Municipal de Saúde,8/1/2026,11/30/2026,122,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 3,Gestão de Pessoas e Clima Organizacional,OE 3.1,Implantar programa de gestão de pessoas com foco em desenvolvimento profissional,3.1.1,Realizar diagnóstico de competências e demandas de treinamento,Percentual de conclusão do diagnóstico,Relatório de Diagnóstico,Coordenação de RH,8/1/2026,10/31/2026,92,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 3,Gestão de Pessoas e Clima Organizacional,OE 3.1,Implantar programa de gestão de pessoas com foco em desenvolvimento profissional,3.1.2,Desenvolver plano de carreira e progressão funcional,Percentual de estruturação do plano,Documento Formal,Secretaria Municipal de Saúde,9/1/2026,3/31/2027,213,0.0%,70.0%,0.0%,70.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 3,Gestão de Pessoas e Clima Organizacional,OE 3.2,Fortalecer comunicação interna e engajamento de equipes,3.2.1,Implantar canais de comunicação bidirecional (murais mural digital whatsapp),Percentual de implantação de canais,Relatório de Implantação,Coordenação de Comunicação,8/1/2026,11/30/2026,122,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 3,Gestão de Pessoas e Clima Organizacional,OE 3.2,Fortalecer comunicação interna e engajamento de equipes,3.2.2,Realizar pesquisa de clima organizacional semestral,Percentual de conclusão da pesquisa,Pesquisa de Clima,Recursos Humanos,1/1/2027,6/30/2027,181,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 4,Sustentabilidade e Inovação,OE 4.1,Implementar práticas de sustentabilidade ambiental nas unidades de saúde,4.1.1,Elaborar plano municipal de gestão de resíduos de serviços de saúde (PGRSS),Percentual de elaboração aprovação e implantação,Regulamentação Municipal,Vigilância em Saúde,8/1/2026,2/28/2027,214,0.0%,100.0%,0.0%,100.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 4,Sustentabilidade e Inovação,OE 4.1,Implementar práticas de sustentabilidade ambiental nas unidades de saúde,4.1.2,Implantar programa de eficiência energética e gestão de água,Percentual de implantação,Relatório de Monitoramento,Coordenação de Infraestrutura,9/1/2026,7/31/2027,333,0.0%,60.0%,0.0%,60.0%,0.0%,0.0%,0.0%,,Não iniciado,
-EIXO 4,Sustentabilidade e Inovação,OE 4.2,Fomentar inovação tecnológica e processos modernos,4.2.1,Avaliar e propor soluções de TI para otimização de processos,Percentual de conclusão da avaliação,Relatório de Avaliação,Recepção Apoio Administrativo e TI,8/1/2026,12/31/2026,153,0.0%,80.0%,0.0%,80.0%,0.0%,0.0%,0.0%,,Não iniciado`;
-
-  function parseCSV(csv) {
-    const lines = csv.trim().split('\n');
-    const headers = lines[0].split(',').map(h => h.trim());
-    const result = [];
-    for (let i = 1; i < lines.length; i++) {
-      if (!lines[i].trim()) continue;
-      const cells = lines[i].split(',').map(c => c.trim());
-      const obj = {};
-      headers.forEach((h, idx) => {
-        obj[h] = cells[idx] || '';
-      });
-      result.push(obj);
+  // Tema escuro/claro
+  const themeToggle = document.getElementById("themeToggle");
+  const html = document.documentElement;
+  
+  function initTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    const isDark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (isDark) {
+      html.classList.add("dark-mode");
+      themeToggle.textContent = "☀️";
+    } else {
+      html.classList.remove("dark-mode");
+      themeToggle.textContent = "🌙";
     }
-    return result;
   }
+  
+  themeToggle.addEventListener("click", () => {
+    html.classList.toggle("dark-mode");
+    const isDark = html.classList.contains("dark-mode");
+    localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
+    themeToggle.textContent = isDark ? "☀️" : "🌙";
+  });
+
+  initTheme();
+
+  // Dados das 46 ações
+  const actionsData = [
+    {eixo: "EIXO 1", codigo: "1.1.1", acao: "Elaborar e formalizar protocolo municipal de processamento de produtos para saúde, com fluxo unidirecional entre área suja e área limpa", indicador: "Percentual de unidades com protocolo formalizado e implantado", objetivo: "Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME)", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Equipe Técnica de Assessoria"},
+    {eixo: "EIXO 1", codigo: "1.1.2", acao: "Instituir sistema de monitoramento e rastreabilidade dos ciclos de esterilização, com controles físicos, químicos e biológicos", indicador: "Percentual de unidades com registro sistemático de monitoramento dos ciclos de esterilização", objetivo: "Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME)", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Coordenação da APS"},
+    {eixo: "EIXO 1", codigo: "1.1.3", acao: "Avaliar viabilidade técnico-econômica de Central Municipal de Esterilização e capacitar periodicamente as equipes responsáveis", indicador: "Percentual de execução do estudo de viabilidade e do plano de capacitação", objetivo: "Implantar processo padronizado de processamento e esterilização de materiais na rede municipal (CME)", fonte: "Relatório Nº 29/2026 Achado 01", responsavel: "Secretaria Municipal de Saúde"},
+    {eixo: "EIXO 1", codigo: "1.2.1", acao: "Contratar ou mobilizar avaliação técnica especializada de engenharia civil, elétrica e predial nas 13 unidades avaliadas", indicador: "Percentual de unidades com laudo técnico especializado emitido", objetivo: "Requalificar as condições prediais, a ambiência e os sistemas de climatização das unidades de saúde", fonte: "Relatório Nº 29/2026 Achado 04", responsavel: "Secretaria Municipal de Saúde"},
+    {eixo: "EIXO 1", codigo: "1.2.2", acao: "Elaborar e implantar plano municipal de manutenção preventiva e corretiva predial, com cronograma periódico de inspeções", indicador: "Percentual de unidades incluídas no cronograma de manutenção preventiva", objetivo: "Requalificar as condições prediais, a ambiência e os sistemas de climatização das unidades de saúde", fonte: "Relatório Nº 29/2026 Achado 04", responsavel: "Coordenação de UBS"},
+    {eixo: "EIXO 1", codigo: "1.2.3", acao: "Levantar os equipamentos de climatização, verificar e implantar o PMOC e os contratos de manutenção preventiva", indicador: "Percentual de unidades com PMOC vigente e documentado", objetivo: "Requalificar as condições prediais, a ambiência e os sistemas de climatização das unidades de saúde", fonte: "Relatório Nº 29/2026 Achado 08", responsavel: "Recepção, Apoio Administrativo e TI"},
+    {eixo: "EIXO 1", codigo: "1.3.1", acao: "Implantar programa municipal de organização e padronização dos ambientes e do armazenamento de materiais e insumos", indicador: "Percentual de unidades com condições satisfatórias de organização e armazenamento", objetivo: "Padronizar a organização de ambientes assistenciais, o armazenamento de materiais e a identificação institucional", fonte: "Relatório Nº 29/2026 Achado 06", responsavel: "Coordenação de UBS"},
+    {eixo: "EIXO 1", codigo: "1.3.2", acao: "Revisar e padronizar as diretrizes de identificação funcional dos profissionais, com uso obrigatório de crachás e uniformes", indicador: "Percentual de unidades com adesão padronizada à identificação funcional", objetivo: "Padronizar a organização de ambientes assistenciais, o armazenamento de materiais e a identificação institucional", fonte: "Relatório Nº 29/2026 Achado 10", responsavel: "Secretaria Municipal de Saúde"},
+    {eixo: "EIXO 2", codigo: "2.1.1", acao: "Constituir Comissão de Segurança do Paciente e definir fluxos de notificação de eventos adversos", indicador: "Percentual de unidades com comissão constituída e fluxo implantado", objetivo: "Implantar sistema de gestão de risco clínico e segurança do paciente", fonte: "Identificação de não conformidades operacionais", responsavel: "Coordenação de UBS"},
+    {eixo: "EIXO 2", codigo: "2.1.2", acao: "Elaborar protocolo municipal de prevenção de queda de pacientes nas unidades", indicador: "Percentual de elaboração e aprovação de protocolo", objetivo: "Implantar sistema de gestão de risco clínico e segurança do paciente", fonte: "Política de Qualidade Municipal", responsavel: "Equipe Técnica de Assessoria"},
+    {eixo: "EIXO 2", codigo: "2.1.3", acao: "Treinar equipes em protocolos de higiene de mãos e uso de EPIs", indicador: "Percentual de profissionais treinados", objetivo: "Implantar sistema de gestão de risco clínico e segurança do paciente", fonte: "SISAB e Registros Administrativos", responsavel: "Vigilância em Saúde"},
+    {eixo: "EIXO 2", codigo: "2.2.1", acao: "Avaliar e atualizar modelos de registros e prontuário eletrônico nas UBS", indicador: "Percentual de adequação dos registros assistenciais", objetivo: "Fortalecer processos de documentação e rastreabilidade assistencial", fonte: "Auditoria dos Registros", responsavel: "Coordenação de UBS"},
+    {eixo: "EIXO 2", codigo: "2.2.2", acao: "Implantar sistema de rastreabilidade de medicações e produtos", indicador: "Percentual de implantação", objetivo: "Fortalecer processos de documentação e rastreabilidade assistencial", fonte: "Registros de Rastreabilidade", responsavel: "Farmácia Municipal"},
+    {eixo: "EIXO 2", codigo: "2.3.1", acao: "Estruturar programa de educação permanente com plano anual", indicador: "Percentual de estruturação e aprovação", objetivo: "Desenvolver programa de educação permanente em saúde", fonte: "Plano Educacional", responsavel: "Secretaria Municipal de Saúde"},
+    {eixo: "EIXO 3", codigo: "3.1.1", acao: "Realizar diagnóstico de competências e demandas de treinamento", indicador: "Percentual de conclusão do diagnóstico", objetivo: "Implantar programa de gestão de pessoas com foco em desenvolvimento profissional", fonte: "Relatório de Diagnóstico", responsavel: "Coordenação de RH"},
+    {eixo: "EIXO 3", codigo: "3.1.2", acao: "Desenvolver plano de carreira e progressão funcional", indicador: "Percentual de estruturação do plano", objetivo: "Implantar programa de gestão de pessoas com foco em desenvolvimento profissional", fonte: "Documento Formal", responsavel: "Secretaria Municipal de Saúde"},
+    {eixo: "EIXO 3", codigo: "3.2.1", acao: "Implantar canais de comunicação bidirecional (murais, mural digital, whatsapp)", indicador: "Percentual de implantação de canais", objetivo: "Fortalecer comunicação interna e engajamento de equipes", fonte: "Relatório de Implantação", responsavel: "Coordenação de Comunicação"},
+    {eixo: "EIXO 3", codigo: "3.2.2", acao: "Realizar pesquisa de clima organizacional semestral", indicador: "Percentual de conclusão da pesquisa", objetivo: "Fortalecer comunicação interna e engajamento de equipes", fonte: "Pesquisa de Clima", responsavel: "Recursos Humanos"},
+    {eixo: "EIXO 4", codigo: "4.1.1", acao: "Elaborar plano municipal de gestão de resíduos de serviços de saúde (PGRSS)", indicador: "Percentual de elaboração, aprovação e implantação", objetivo: "Implementar práticas de sustentabilidade ambiental nas unidades de saúde", fonte: "Regulamentação Municipal", responsavel: "Vigilância em Saúde"},
+    {eixo: "EIXO 4", codigo: "4.1.2", acao: "Implantar programa de eficiência energética e gestão de água", indicador: "Percentual de implantação", objetivo: "Implementar práticas de sustentabilidade ambiental nas unidades de saúde", fonte: "Relatório de Monitoramento", responsavel: "Coordenação de Infraestrutura"},
+    {eixo: "EIXO 4", codigo: "4.2.1", acao: "Avaliar e propor soluções de TI para otimização de processos", indicador: "Percentual de conclusão da avaliação", objetivo: "Fomentar inovação tecnológica e processos modernos", fonte: "Relatório de Avaliação", responsavel: "Recepção, Apoio Administrativo e TI"}
+  ];
 
   function computeStatus(percentAtual) {
-    if (!percentAtual || percentAtual === '') return "Não iniciado";
+    if (!percentAtual || percentAtual === "") return "Não iniciado";
     const num = parseFloat(percentAtual) || 0;
     if (num >= 100) return "Concluído";
     if (num >= 70) return "Em andamento";
@@ -181,37 +240,25 @@ EIXO 4,Sustentabilidade e Inovação,OE 4.2,Fomentar inovação tecnológica e p
   }
 
   function buildAll() {
-    // Parse data
-    const rawActions = parseCSV(rawData);
-    
-    // Load from storage if exists
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
     
-    actions = rawActions.map((row, idx) => {
+    actions = actionsData.map((item, idx) => {
       const id = String(idx);
-      const base = {
-        id,
-        ...row
-      };
-      if (saved[id]) {
-        return {...base, ...saved[id]};
-      }
+      const base = {...item, id, pct: 0, obs: ""};
+      if (saved[id]) return {...base, ...saved[id]};
       return base;
     });
 
-    // Collect eixos
-    actions.forEach(a => {
-      if (a.EIXO) eixos.add(a.EIXO);
-    });
+    actions.forEach(a => eixos.add(a.eixo));
 
     // KPI
-    const validActions = actions.filter(a => a.EIXO);
-    const avgAting = validActions.reduce((s, a) => s + (parseFloat(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA'] || 0)), 0) / (validActions.length || 1);
+    const avgAting = actions.reduce((s, a) => s + (parseFloat(a.pct) || 0), 0) / actions.length;
+    document.getElementById("kpi-total").textContent = actions.length;
     document.getElementById("kpi-ating").textContent = Math.round(avgAting) + "%";
-    const notStarted = validActions.filter(a => computeStatus(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA']) === "Não iniciado").length;
+    const notStarted = actions.filter(a => computeStatus(a.pct) === "Não iniciado").length;
     document.getElementById("kpi-criticos").textContent = notStarted;
 
-    // Filter select
+    // Filter
     const filterEixo = document.getElementById("filterEixo");
     [...eixos].sort().forEach(e => {
       const opt = document.createElement("option");
@@ -229,80 +276,43 @@ EIXO 4,Sustentabilidade e Inovação,OE 4.2,Fomentar inovação tecnológica e p
       
       const header = document.createElement("div");
       header.className = "eixo-header";
-      const eixoActions = actions.filter(a => a.EIXO === eixo);
-      const eixoAvgAting = eixoActions.reduce((s, a) => s + (parseFloat(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA'] || 0)), 0) / (eixoActions.length || 1);
+      const eixoActions = actions.filter(a => a.eixo === eixo);
+      const eixoAvg = eixoActions.reduce((s, a) => s + (parseFloat(a.pct) || 0), 0) / eixoActions.length;
       
-      header.innerHTML = `
-        <span class="eixo-tag">${eixo.replace("EIXO ", "E")}</span>
-        <div>
-          <div class="eixo-title">${eixo}</div>
-          <div class="eixo-subtitle">${eixoActions.length} ações | Atingimento: ${Math.round(eixoAvgAting)}%</div>
-        </div>
-      `;
+      header.innerHTML = `<span class="eixo-tag">${eixo.replace("EIXO ", "E")}</span><div><div class="eixo-title">${eixo}</div><div class="eixo-subtitle">${eixoActions.length} ações | Atingimento: ${Math.round(eixoAvg)}%</div></div>`;
       panel.appendChild(header);
 
       const actionsList = document.createElement("div");
       actionsList.className = "actions-list";
       eixoActions.forEach(a => {
-        const status = computeStatus(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA']);
+        const status = computeStatus(a.pct);
         const row = document.createElement("div");
         row.className = "action-row";
         row.id = "row-" + a.id;
         row.dataset.eixo = eixo;
         row.dataset.status = status;
         
-        const pctAtual = parseFloat(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA'] || 0);
-        const pctDisplay = pctAtual > 0 ? Math.round(pctAtual) + "%" : "—";
+        const pctDisplay = a.pct > 0 ? Math.round(a.pct) + "%" : "—";
         
-        row.innerHTML = `
-          <span class="chevron"></span>
-          <span class="action-code">${a['CÓD. AÇÃO']}</span>
-          <div style="flex:1;">
-            <div class="action-title">${a['AÇÃO']}</div>
-            <div class="action-indicator">${a['INDICADOR DE MONITORAMENTO']}</div>
-          </div>
-          <span class="action-status" data-s="${status}">${pctDisplay}</span>
-        `;
+        row.innerHTML = `<span class="chevron"></span><span class="action-code">${a.codigo}</span><div style="flex:1;"><div class="action-title">${a.acao}</div><div class="action-indicator">${a.indicador}</div></div><span class="action-status" data-s="${status}">${pctDisplay}</span>`;
         
         const detail = document.createElement("div");
         detail.className = "action-detail";
         detail.innerHTML = `
           <div class="detail-grid">
-            <div class="detail-item">
-              <div class="detail-label">Objetivo Estratégico</div>
-              <div class="detail-value">${a['OBJETIVO ESTRATÉGICO'] || "—"}</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Fonte de Verificação</div>
-              <div class="detail-value">${a['FONTE DE VERIFICAÇÃO'] || "—"}</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Responsável</div>
-              <div class="detail-value"><input type="text" value="${a['RESPONSÁVEL'] || ''}" data-field="RESPONSÁVEL" data-id="${a.id}"></div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Data de Início</div>
-              <div class="detail-value"><input type="date" value="${a['DATA DE INÍCIO'] || ''}" data-field="DATA DE INÍCIO" data-id="${a.id}"></div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Data de Término</div>
-              <div class="detail-value"><input type="date" value="${a['DATA DE TÉRMINO'] || ''}" data-field="DATA DE TÉRMINO" data-id="${a.id}"></div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">% Atual</div>
-              <div class="detail-value"><input type="number" min="0" max="100" value="${pctAtual || 0}" data-field="% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA" data-id="${a.id}"></div>
-            </div>
+            <div class="detail-item"><div class="detail-label">Objetivo</div><div class="detail-value">${a.objetivo || "—"}</div></div>
+            <div class="detail-item"><div class="detail-label">Fonte de Verificação</div><div class="detail-value">${a.fonte || "—"}</div></div>
+            <div class="detail-item"><div class="detail-label">Responsável</div><div class="detail-value"><input type="text" value="${a.responsavel || ''}" data-field="responsavel" data-id="${a.id}"></div></div>
+            <div class="detail-item"><div class="detail-label">% de Progresso</div><div class="detail-value"><input type="number" min="0" max="100" value="${a.pct || 0}" data-field="pct" data-id="${a.id}"></div></div>
+            <div class="detail-item"><div class="detail-label">Data Início</div><div class="detail-value"><input type="date" value="${a.dataInicio || ''}" data-field="dataInicio" data-id="${a.id}"></div></div>
+            <div class="detail-item"><div class="detail-label">Data Término</div><div class="detail-value"><input type="date" value="${a.dataTermino || ''}" data-field="dataTermino" data-id="${a.id}"></div></div>
           </div>
-          <div style="margin-top:15px;">
-            <div class="detail-label">Observações</div>
-            <textarea data-field="OBSERVAÇÕES / EVIDÊNCIAS" data-id="${a.id}">${a['OBSERVAÇÕES / EVIDÊNCIAS'] || ''}</textarea>
-          </div>
+          <div style="margin-top:15px;"><div class="detail-label">Observações</div><textarea data-field="obs" data-id="${a.id}">${a.obs || ''}</textarea></div>
         `;
 
         row.appendChild(detail);
         row.addEventListener("click", () => row.classList.toggle("open"));
         
-        // Save on change
         detail.querySelectorAll("[data-field]").forEach(el => {
           el.addEventListener("change", () => {
             const actionId = el.getAttribute("data-id");
@@ -311,11 +321,8 @@ EIXO 4,Sustentabilidade e Inovação,OE 4.2,Fomentar inovação tecnológica e p
             if (action) {
               action[field] = el.value;
               const toSave = {};
-              actions.forEach(a => {
-                toSave[a.id] = a;
-              });
+              actions.forEach(a => toSave[a.id] = a);
               localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-              document.getElementById("lastUpdate").textContent = new Date().toLocaleString("pt-BR");
               buildAll();
             }
           });
@@ -328,16 +335,17 @@ EIXO 4,Sustentabilidade e Inovação,OE 4.2,Fomentar inovação tecnológica e p
     });
 
     applyFilters();
+    document.getElementById("syncStatus").textContent = "✅ Dados carregados com sucesso";
   }
 
   function applyFilters() {
     actions.forEach(a => {
       const row = document.getElementById("row-" + a.id);
       if (!row) return;
-      const status = computeStatus(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA']);
+      const status = computeStatus(a.pct);
       const matches =
-        (!filters.search || (a['AÇÃO'] + " " + a['CÓD. AÇÃO'] + " " + a['INDICADOR DE MONITORAMENTO']).toLowerCase().includes(filters.search.toLowerCase())) &&
-        (filters.eixo === "all" || a.EIXO === filters.eixo) &&
+        (!filters.search || (a.acao + " " + a.codigo + " " + a.indicador).toLowerCase().includes(filters.search.toLowerCase())) &&
+        (filters.eixo === "all" || a.eixo === filters.eixo) &&
         (filters.status === "all" || status === filters.status);
       row.style.display = matches ? "" : "none";
     });
@@ -357,11 +365,10 @@ EIXO 4,Sustentabilidade e Inovação,OE 4.2,Fomentar inovação tecnológica e p
       applyFilters();
     });
     document.getElementById("btnExport").addEventListener("click", () => {
-      const csv = ["Eixo;Código;Ação;Indicador;% Atual;Status;Responsável;Observações"].concat(
-        actions.filter(a => a.EIXO).map(a => {
-          const status = computeStatus(a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA']);
-          const pct = a['% ATUAL DE APRESENTAÇÃO DA PROBLEMÁTICA'] || 0;
-          return `${a.EIXO};${a['CÓD. AÇÃO']};${a['AÇÃO']};${a['INDICADOR DE MONITORAMENTO']};${pct};${status};${a['RESPONSÁVEL'] || ''};${(a['OBSERVAÇÕES / EVIDÊNCIAS'] || '').replace(/;/g, ' ')}`;
+      const csv = ["Eixo;Código;Ação;Indicador;% Progresso;Status;Responsável;Observações"].concat(
+        actions.map(a => {
+          const status = computeStatus(a.pct);
+          return `${a.eixo};${a.codigo};${a.acao};${a.indicador};${a.pct};${status};${a.responsavel || ''};${(a.obs || '').replace(/;/g, ' ')}`;
         })
       ).join("\n");
       const blob = new Blob(["\ufeff" + csv], {type:"text/csv"});
@@ -374,7 +381,6 @@ EIXO 4,Sustentabilidade e Inovação,OE 4.2,Fomentar inovação tecnológica e p
 
   buildAll();
   attachHandlers();
-  document.getElementById("lastUpdate").textContent = new Date().toLocaleString("pt-BR");
 })();
 </script>
 </body>
