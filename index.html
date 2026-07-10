@@ -91,8 +91,9 @@
   .eixo-subtitle { font-size:13px; color: var(--ink-soft); }
 
   .actions-list { border-top:1px solid var(--line); }
-  .action-row { border-bottom:1px solid var(--line); padding: 13px 20px; cursor:pointer; transition: all 0.3s; }
+  .action-row { border-bottom:1px solid var(--line); padding: 13px 20px; transition: all 0.3s; }
   .action-row:hover { background: var(--surface-2); }
+  .action-summary-area { cursor: pointer; display: flex; align-items: center; gap: 14px; flex: 1; }
   .chevron { display:inline-block; width:8px; height:8px; border-right:2px solid var(--ink-soft); border-bottom:2px solid var(--ink-soft); transform: rotate(-45deg); margin-right:10px; transition: transform .2s; }
   .action-row.open .chevron { transform: rotate(45deg); }
   .action-code { font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; color: var(--accent); margin-right:10px; }
@@ -536,7 +537,12 @@
         
         const pctDisplay = a.pct > 0 ? Math.round(a.pct) + "%" : "—";
         
-        row.innerHTML = `<span class="chevron"></span><span class="action-code">${a.codigo}</span><div style="flex:1;"><div class="action-title">${a.acao}</div><div class="action-indicator">${a.indicador}</div></div><span class="action-status" data-s="${status}">${pctDisplay}</span>`;
+        // Criar elemento summary clicável
+        const summary = document.createElement("div");
+        summary.className = "action-summary-area";
+        summary.innerHTML = `<span class="chevron"></span><span class="action-code">${a.codigo}</span><div style="flex:1;"><div class="action-title">${a.acao}</div><div class="action-indicator">${a.indicador}</div></div><span class="action-status" data-s="${status}">${pctDisplay}</span>`;
+        
+        row.appendChild(summary);
         
         const detail = document.createElement("div");
         detail.className = "action-detail";
@@ -553,9 +559,18 @@
         `;
 
         row.appendChild(detail);
-        row.addEventListener("click", () => row.classList.toggle("open"));
+        
+        // Toggle ao clicar no summary
+        summary.addEventListener("click", () => {
+          row.classList.toggle("open");
+        });
         
         detail.querySelectorAll("[data-field]").forEach(el => {
+          // Impedir que clique no input propague para o row
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+          });
+          
           el.addEventListener("change", () => {
             const actionId = el.getAttribute("data-id");
             const field = el.getAttribute("data-field");
